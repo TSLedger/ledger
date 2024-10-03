@@ -1,85 +1,207 @@
-import { Heartbeat, Payload, PayloadCode } from './lib/util/payload.ts';
+import { Queue } from '@cm-iv/queue';
+import type { Message, Payload } from './lib/util/struct.ts';
+import { PayloadCode } from './lib/util/struct.ts';
+import { Level } from './lib/util/level.ts';
 
-/*
-
-Acknowledge Queue. Send a Log 'Request' to Worker and Worker must ack request to remove from stack. Non-ack will resend after short time. Protects against missed events on restart or worker death.
-
-*/
-
-/**
- * The Ledger Builder Class.
- */
 export class Ledger {
-  private options: LedgerOptions;
-  private worker: Worker;
+  private worker: Worker | null = null;
+  private queue = new Queue<Message>();
 
-  private heartbeatInterval: number;
-  private heartbeats = new Set<string>();
+  private accepting = false;
+  private handleQueueInterval: number = -1;
+  private heartbeatQueueInverval: number = -1;
 
-  public constructor(options: LedgerOptions) {
-    this.options = options;
-    this.worker = new Worker(new URL('./lib/handler.ts', import.meta.url).href, { type: 'module' });
-    this.addListener();
-
-    this.heartbeatInterval = setInterval(async () => {
-      if (!(await this.waitForHeartbeat())) {
-        console.info('heartbeat fail');
-        this.worker.terminate();
-        this.worker = new Worker(new URL('./lib/handler.ts', import.meta.url).href, { type: 'module' });
-        this.addListener();
-        // TODO: Post Message to Logs for Fatal Error Recovery (Possible Missed Events)
-      }
-    }, 500);
+  public constructor() {
+    // Create Worker
+    this.createWorker();
   }
 
-  private addListener(): void {
-    // Heartbeat Handler
-    this.worker.addEventListener('message', (ctx: MessageEvent<Payload>) => {
-      switch (ctx.data.code) {
+  private createWorker(): void {
+    this.shutdown();
+    this.worker = new Worker(new URL('./lib/handler.ts', import.meta.url).href, { type: 'module' });
+    this.addEventListener();
+    this.addIntervalSchedule();
+  }
+
+  private addEventListener(): void {
+    this.worker!.addEventListener('message', (message: MessageEvent<Payload>) => {
+      switch (message.data.code) {
         case PayloadCode.HEARTBEAT: {
-          const message: Heartbeat = ctx.data as Heartbeat;
-          this.heartbeats.add(message.heartbeat);
+          this.accepting = true;
           break;
         }
       }
     });
   }
 
-  private async waitForHeartbeat(): Promise<boolean> {
-    const heartbeat = crypto.randomUUID();
-    this.worker.postMessage({
-      code: PayloadCode.HEARTBEAT,
-      heartbeat,
-    });
-    return await new Promise((resolve) => {
-      setTimeout(() => {
-        if (this.heartbeats.has(heartbeat)) {
-          this.heartbeats.clear();
-          return resolve(true);
-        } else {
-          return resolve(false);
+  private addIntervalSchedule(): void {
+    clearInterval(this.handleQueueInterval);
+    clearInterval(this.heartbeatQueueInverval);
+
+    // Add Schedule
+    this.handleQueueInterval = setInterval(() => {
+      try {
+        if (!this.accepting || this.worker === null || this.queue.isEmpty()) return;
+        const message = this.queue.dequeue();
+        if (message !== undefined) {
+          this.worker.postMessage(message);
         }
-      }, 100);
-    });
+      } catch (e: unknown) {
+        this.send({
+          code: PayloadCode.MESSAGE,
+          uuid: crypto.randomUUID(),
+          date: new Date(),
+          level: Level.CRITICAL,
+          message: ['Failed to Process Ledger Queue', e],
+        });
+      }
+    }, 1);
+
+    this.heartbeatQueueInverval = setInterval(() => {
+      if (this.accepting === false) {
+        this.createWorker();
+      }
+      this.accepting = false;
+      this.worker?.postMessage({
+        code: PayloadCode.HEARTBEAT,
+      });
+    }, 500);
+  }
+
+  public send(message: Message): void {
+    this.queue.enqueue(message);
   }
 
   public shutdown(): void {
-    clearInterval(this.heartbeatInterval);
-    this.worker.terminate();
-  }
-
-  public restart(): void {
-    this.worker.terminate();
+    this.accepting = false;
+    clearInterval(this.heartbeatQueueInverval);
+    clearInterval(this.handleQueueInterval);
+    this.worker?.terminate();
   }
 }
 
-export interface LedgerOptions {
-  name: string;
-}
-
-const r = new Ledger({
-  name: 'test',
+const ledger = new Ledger();
+ledger.send({
+  code: PayloadCode.MESSAGE,
+  uuid: crypto.randomUUID(),
+  date: new Date(),
+  level: 'silly-severe',
 });
-setTimeout(() => {
-  r.restart();
-}, 3000);
+
+// import { type Acknowledge, type Heartbeat, type Message, type Payload, PayloadCode } from './lib/util/struct.ts';
+// import { newQueue } from '@henrygd/queue';
+
+// /**
+//  * The Ledger Builder Class.
+//  */
+// export class Ledger {
+//   private options: LedgerOptions;
+//   private worker: Worker | null = null;
+
+//   // Message Queue
+//   private queue = newQueue(5);
+//   private acknowledge = new Set<string>();
+
+//   // Heartbeat Queue
+//   private heartbeatInterval: number;
+//   private heartbeat = '';
+
+//   public constructor(options: LedgerOptions) {
+//     this.options = options;
+//     this.createWorker();
+//   }
+
+//   private createWorker(): void {
+//     this.worker =
+
+//     this.heartbeatInterval = setInterval(async () => {
+//       if (!(await this.waitForHeartbeat())) {
+//         this.worker.terminate();
+//         this.worker = new Worker(new URL('./lib/handler.ts', import.meta.url).href, { type: 'module' });
+//         this.addListener();
+//         console.info('TODO: ADD NOTICE TO HEARTBEAT (LEDGER) INTERNAL FAILURE');
+//       }
+//     }, 250);
+//     // Heartbeat Handler
+//     this.worker!.addEventListener('message', (ctx: MessageEvent<Payload>) => {
+//       switch (ctx.data.code) {
+//         case PayloadCode.HEARTBEAT: {
+//           const message: Heartbeat = ctx.data as Heartbeat;
+//           this.heartbeat = message.heartbeat;
+//           break;
+//         }
+//         case PayloadCode.ACKNOWLEDGE: {
+//           const message: Acknowledge = ctx.data as Acknowledge;
+//           this.acknowledge.add(message.uuid);
+//           break;
+//         }
+//       }
+//     });
+//   }
+
+//   private async waitForHeartbeat(): Promise<boolean> {
+//     const heartbeat = crypto.randomUUID();
+//     this.worker.postMessage({
+//       code: PayloadCode.HEARTBEAT,
+//       heartbeat,
+//     });
+//     return await new Promise((resolve) => {
+//       setTimeout(() => {
+//         if (this.heartbeat === heartbeat) {
+//           return resolve(true);
+//         } else {
+//           return resolve(false);
+//         }
+//       }, 100);
+//     });
+//   }
+
+//   private async waitForAcknowledgement(uuid: string): Promise<boolean> {
+//     return await new Promise((resolve) => {
+//       setTimeout(() => {
+//         if (this.acknowledge.has(uuid)) {
+//           this.acknowledge.delete(uuid);
+//           return resolve(true);
+//         } else {
+//           return resolve(false);
+//         }
+//       }, 500);
+//     });
+//   }
+
+//   /**
+//    * Shutdown Ledger and the Worker Thread.
+//    */
+//   public shutdown(): void {
+//     clearInterval(this.heartbeatInterval);
+//     this.worker.terminate();
+//   }
+
+//   /**
+//    * Terminate and Restart the Worker Thread.
+//    */
+//   public restart(): void {
+//     this.worker.terminate();
+//   }
+
+//   public async mockSendMessage(): Promise<void> {
+//     const message: Message = {
+//       code: PayloadCode.ADD,
+//       uuid: crypto.randomUUID(),
+//     };
+//     this.worker.postMessage(message);
+//     while (!(await this.waitForAcknowledgement(message.uuid))) {
+//       this.worker.postMessage(message);
+//     }
+//     console.info('acktrue');
+//   }
+// }
+
+// export interface LedgerOptions {
+//   name: string;
+// }
+
+// const r = new Ledger({
+//   name: 'test',
+// });
+// await r.mockSendMessage();

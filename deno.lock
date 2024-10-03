@@ -1,0 +1,25 @@
+{
+  "version": "3",
+  "packages": {
+    "specifiers": {
+      "jsr:@cm-iv/queue@^1.0.0": "jsr:@cm-iv/queue@1.0.0",
+      "jsr:@denostack/superserial": "jsr:@denostack/superserial@0.3.5",
+      "jsr:@denostack/superserial@^0.3.5": "jsr:@denostack/superserial@0.3.5"
+    },
+    "jsr": {
+      "@cm-iv/queue@1.0.0": {
+        "integrity": "0dc1da37987077e765240a73f7164196fca065ce585fcb542f8db50831078f0a"
+      },
+      "@denostack/superserial@0.3.5": {
+        "integrity": "081019681862c8ae32dc8d754824ef967aa1f69138c7792517bf12163250aa08"
+      }
+    }
+  },
+  "remote": {},
+  "workspace": {
+    "dependencies": [
+      "jsr:@cm-iv/queue@^1.0.0",
+      "jsr:@denostack/superserial@^0.3.5"
+    ]
+  }
+}
