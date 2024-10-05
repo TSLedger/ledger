@@ -7,7 +7,7 @@ export class Ledger {
   private worker: Worker | null = null;
   private queue = new Queue<Message>();
 
-  private accepting = false;
+  private accepting = true;
   private handleQueueInterval: number = -1;
   private heartbeatQueueInverval: number = -1;
 
@@ -73,10 +73,10 @@ export class Ledger {
   }
 
   public shutdown(): void {
-    this.accepting = false;
-    clearInterval(this.heartbeatQueueInverval);
     clearInterval(this.handleQueueInterval);
+    clearInterval(this.heartbeatQueueInverval);
     this.worker?.terminate();
+    this.worker = null;
   }
 }
 

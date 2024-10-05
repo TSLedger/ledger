@@ -4,6 +4,4 @@ export abstract class InternalTransport {
 }
 
 export interface InternalTransportOptions {
-  name: string;
-  localPackage: string;
 }

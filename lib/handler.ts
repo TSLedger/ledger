@@ -1,4 +1,8 @@
 import { type Message, type Payload, PayloadCode } from './util/struct.ts';
+import { TransportLoader } from './util/transport.ts';
+
+const consoleTransport = await TransportLoader.getInternalTransporter('CONSOLE', {
+});
 
 self.onmessage = async (ctx: MessageEvent<Payload>) => {
   switch (ctx.data.code) {
