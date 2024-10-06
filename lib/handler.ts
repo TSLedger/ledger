@@ -1,12 +1,20 @@
-import { type Message, type Payload, PayloadCode } from './util/struct.ts';
+import { InternalTransport } from './base/transport.internal.ts';
+import { Configure, type Message, type Payload, PayloadCode } from './util/struct.ts';
 import { TransportLoader } from './util/transport.ts';
 
-const consoleTransport = await TransportLoader.getInternalTransporter('CONSOLE', {
-});
+const transports: InternalTransport[] = [];
 
 self.onmessage = async (ctx: MessageEvent<Payload>) => {
   switch (ctx.data.code) {
     case PayloadCode.CONFIGURE: {
+      const message: Configure = ctx.data as Configure;
+      if (message.type === 'INTERNAL') {
+        for (const transport of message.transports) {
+          transports.push(await TransportLoader.getInternalTransporter(transport, {}));
+        }
+      } else {
+        // const transport = await TransportLoader.getInternalTransporter(message.transport, {});
+      }
       break;
     }
     case PayloadCode.MESSAGE: {

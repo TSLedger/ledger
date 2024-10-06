@@ -3,7 +3,7 @@ import { ConsoleTransport } from '../transport/console.ts';
 // import type { ExternalTransport, ExternalTransportOptions } from '../base/transport.external.ts';
 
 export class TransportLoader {
-  public static async getInternalTransporter(internal: keyof typeof Transports, options: InternalTransportOptions): Promise<InternalTransport> {
+  public static async getInternalTransporter(internal: TransportsType, options: InternalTransportOptions): Promise<InternalTransport> {
     const { Transport } = Transports[internal];
     return new Transport(options);
   }
@@ -16,3 +16,4 @@ export class TransportLoader {
 const Transports = {
   CONSOLE: { Transport: ConsoleTransport },
 };
+export type TransportsType = keyof typeof Transports;
