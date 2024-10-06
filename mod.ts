@@ -2,6 +2,7 @@ import { Queue } from '@cm-iv/queue';
 import type { Message, Payload } from './lib/util/struct.ts';
 import { PayloadCode } from './lib/util/struct.ts';
 import { Level } from './lib/util/level.ts';
+import { TransportsType } from './lib/util/transport.ts';
 
 export class Ledger {
   private worker: Worker | null = null;
@@ -11,7 +12,7 @@ export class Ledger {
   private handleQueueInterval: number = -1;
   private heartbeatQueueInverval: number = -1;
 
-  public constructor() {
+  public constructor(options: LedgerOptions) {
     // Create Worker
     this.createWorker();
   }
@@ -19,6 +20,9 @@ export class Ledger {
   private createWorker(): void {
     this.shutdown();
     this.worker = new Worker(new URL('./lib/handler.ts', import.meta.url).href, { type: 'module' });
+    this.worker.postMessage({
+      code: PayloadCode.CONFIGURE,
+    });
     this.addEventListener();
     this.addIntervalSchedule();
   }
@@ -80,13 +84,18 @@ export class Ledger {
   }
 }
 
-const ledger = new Ledger();
-ledger.send({
-  code: PayloadCode.MESSAGE,
-  uuid: crypto.randomUUID(),
-  date: new Date(),
-  level: 'silly-severe',
-});
+export interface LedgerOptions {
+  internal: TransportsType[];
+  external: string[];
+}
+
+// const ledger = new Ledger();
+// ledger.send({
+//   code: PayloadCode.MESSAGE,
+//   uuid: crypto.randomUUID(),
+//   date: new Date(),
+//   level: 'silly-severe',
+// });
 
 // import { type Acknowledge, type Heartbeat, type Message, type Payload, PayloadCode } from './lib/util/struct.ts';
 // import { newQueue } from '@henrygd/queue';

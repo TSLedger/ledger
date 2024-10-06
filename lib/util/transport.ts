@@ -1,6 +1,6 @@
+import type { ExternalTransport, ExternalTransportOptions } from '../base/transport.external.ts';
 import type { InternalTransport, InternalTransportOptions } from '../base/transport.internal.ts';
 import { ConsoleTransport } from '../transport/console.ts';
-// import type { ExternalTransport, ExternalTransportOptions } from '../base/transport.external.ts';
 
 export class TransportLoader {
   public static async getInternalTransporter(internal: TransportsType, options: InternalTransportOptions): Promise<InternalTransport> {
@@ -8,9 +8,10 @@ export class TransportLoader {
     return new Transport(options);
   }
 
-  // public static async getExternalTransport(options: ExternalTransportOptions): Promise<ExternalTransport> {
-  //   const { Transport } = await import(options.jsrPackage) as { Transport: ExternalTransport };
-  // }
+  public static async getExternalTransporter(options: ExternalTransportOptions): Promise<ExternalTransport> {
+    const { Transport } = await import(options.package) as { Transport: typeof ExternalTransport };
+    return new Transport(options);
+  }
 }
 
 const Transports = {

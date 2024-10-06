@@ -1,9 +1,9 @@
-export abstract class ExternalTransport {
+export class ExternalTransport {
   public constructor(options: ExternalTransportOptions) {
   }
 }
 
 export interface ExternalTransportOptions {
   name: string;
-  jsrPackage: string;
+  package: string;
 }

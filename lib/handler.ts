@@ -1,8 +1,9 @@
-import { InternalTransport } from './base/transport.internal.ts';
-import { Configure, type Message, type Payload, PayloadCode } from './util/struct.ts';
+import type { ExternalTransport } from './base/transport.external.ts';
+import type { InternalTransport } from './base/transport.internal.ts';
+import { type Configure, type Message, type Payload, PayloadCode } from './util/struct.ts';
 import { TransportLoader } from './util/transport.ts';
 
-const transports: InternalTransport[] = [];
+const transports: (InternalTransport | ExternalTransport)[] = [];
 
 self.onmessage = async (ctx: MessageEvent<Payload>) => {
   switch (ctx.data.code) {
@@ -12,8 +13,13 @@ self.onmessage = async (ctx: MessageEvent<Payload>) => {
         for (const transport of message.transports) {
           transports.push(await TransportLoader.getInternalTransporter(transport, {}));
         }
-      } else {
-        // const transport = await TransportLoader.getInternalTransporter(message.transport, {});
+      } else if (message.type === 'EXTERNAL') {
+        for (const transport of message.transports) {
+          transports.push(await TransportLoader.getExternalTransporter(transport, {
+            name: 
+            package: transport,
+          }));
+        }
       }
       break;
     }

@@ -17,9 +17,16 @@ export interface Payload {
   code: PayloadCode;
 }
 
-export interface Configure extends Payload {
-  type: 'INTERNAL' | 'EXTERNAL';
+export type Configure = ConfigureInternal | ConfigureExternal;
+
+interface ConfigureInternal extends Payload {
+  type: 'INTERNAL';
   transports: TransportsType[];
+}
+
+interface ConfigureExternal extends Payload {
+  type: 'EXTERNAL'
+  transports: string[]
 }
 
 export interface Message extends Payload {
