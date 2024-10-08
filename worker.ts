@@ -15,7 +15,7 @@ class TransportWorker {
 }
 
 self.setInterval(() => {
-  if (TransportWorker.queue.isEmpty() || TransportWorker.transport === null) return;
+  if (TransportWorker.transport === null || TransportWorker.queue.isEmpty()) return;
   TransportWorker.transport.consume(TransportWorker.queue.dequeue()!).catch((e) => {
     self.postMessage({
       op: TransportOp.INTERNAL_ERROR,
@@ -36,8 +36,7 @@ self.addEventListener('message', async (event: MessageEvent<TransportMessage>) =
     }
     case TransportOp.SET_PACKAGE: {
       const message = event.data as TransportSetPackageMessage;
-      const { Transport } = await import('../ledger-console-transport/mod.ts') as { Transport: typeof LedgerTransport };
-      // const { Transport } = await import(message.package) as { Transport: typeof LedgerTransport };
+      const { Transport } = await import(message.package) as { Transport: typeof LedgerTransport };
       TransportWorker.setTransport(message, new Transport(message.options));
       break;
     }

@@ -6,9 +6,6 @@ import { TransportOp } from './lib/interface/op.ts';
 export class Ledger {
   public transports: Set<TransportWorkerController> = new Set();
 
-  public constructor() {
-  }
-
   /**
    * Initializes a {@link TransportWorkerController} from a https://jsr.io/ package.
    *
@@ -20,56 +17,49 @@ export class Ledger {
     return this;
   }
 
-  public trace(...args: unknown[]): void {
+  public trace(message: string, ...args: unknown[]): void {
     this.transports.forEach((v) => {
       v.emit({
         op: TransportOp.HANDLE,
         level: Level.TRACE,
         date: new Date(),
+        message,
         args,
       });
     });
   }
 
-  public info(...args: unknown[]): void {
+  public info(message: string, ...args: unknown[]): void {
     this.transports.forEach((v) => {
       v.emit({
         op: TransportOp.HANDLE,
         level: Level.INFO,
         date: new Date(),
+        message,
         args,
       });
     });
   }
 
-  public warn(...args: unknown[]): void {
+  public warn(message: string, ...args: unknown[]): void {
     this.transports.forEach((v) => {
       v.emit({
         op: TransportOp.HANDLE,
         level: Level.WARN,
         date: new Date(),
+        message,
         args,
       });
     });
   }
 
-  public severe(...args: unknown[]): void {
+  public severe(message: string, ...args: unknown[]): void {
     this.transports.forEach((v) => {
       v.emit({
         op: TransportOp.HANDLE,
         level: Level.SEVERE,
         date: new Date(),
-        args,
-      });
-    });
-  }
-
-  public fatal(...args: unknown[]): void {
-    this.transports.forEach((v) => {
-      v.emit({
-        op: TransportOp.HANDLE,
-        level: Level.FATAL,
-        date: new Date(),
+        message,
         args,
       });
     });
@@ -88,10 +78,3 @@ export class Ledger {
     this.transports.clear();
   }
 }
-
-const ledger = new Ledger()
-  .addTransportWorker('jsr:@ledger/console-transport', {});
-
-setInterval(async () => {
-  ledger.trace('test test', 123, 123);
-}, 500);

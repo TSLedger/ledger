@@ -3,5 +3,4 @@ export enum Level {
   INFO,
   WARN,
   SEVERE,
-  FATAL,
 }

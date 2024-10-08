@@ -7,5 +7,5 @@ export class LedgerTransport {
     this.options = options;
   }
 
-  public async consume(payload: TransportMessage): Promise<void> {}
+  public async consume(_payload: TransportMessage): Promise<void> {}
 }

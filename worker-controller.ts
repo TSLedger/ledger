@@ -12,7 +12,7 @@ export class TransportWorkerController {
    * @param jsrPackage A jsr.io package in 'jsr:@scope/package' format.
    */
   public constructor(jsrPackage: string, options: LedgerTransportOptions) {
-    if (!jsrPackage.match(/jsr:@.*\/.*$/)) {
+    if (!options.developerMode && !jsrPackage.match(/jsr:@.*\/.*$/)) {
       throw new Error(`jsrPackage must be in 'jsr:@scope/package' format.`);
     }
     this.setPackageMessage = {

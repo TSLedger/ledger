@@ -1,8 +1,9 @@
-import { Level } from './level.ts';
+import type { Level } from './level.ts';
 import type { TransportOp } from './op.ts';
 
 export interface LedgerTransportOptions {
   colorize?: boolean;
+  developerMode?: boolean;
 }
 
 export interface TransportMessage {
@@ -17,5 +18,6 @@ export interface TransportSetPackageMessage extends TransportMessage {
 export interface TransportHandleMessage extends TransportMessage {
   level: Level;
   date: Date;
+  message: string;
   args: unknown[];
 }
