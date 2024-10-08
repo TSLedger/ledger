@@ -36,7 +36,7 @@ self.addEventListener('message', async (event: MessageEvent<TransportMessage>) =
     }
     case TransportOp.SET_PACKAGE: {
       const message = event.data as TransportSetPackageMessage;
-      const { Transport } = await import(message.package) as { Transport: typeof LedgerTransport };
+      const { Transport } = await import(new URL(message.package, import.meta.url).toString()) as { Transport: typeof LedgerTransport };
       TransportWorker.setTransport(message, new Transport(message.options));
       break;
     }
