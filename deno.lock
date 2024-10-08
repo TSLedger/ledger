@@ -4,7 +4,9 @@
     "specifiers": {
       "jsr:@cm-iv/queue@^1.0.0": "jsr:@cm-iv/queue@1.0.0",
       "jsr:@denostack/superserial": "jsr:@denostack/superserial@0.3.5",
-      "jsr:@denostack/superserial@^0.3.5": "jsr:@denostack/superserial@0.3.5"
+      "jsr:@denostack/superserial@^0.3.5": "jsr:@denostack/superserial@0.3.5",
+      "jsr:@std/datetime": "jsr:@std/datetime@0.225.2",
+      "jsr:@std/fmt": "jsr:@std/fmt@1.0.2"
     },
     "jsr": {
       "@cm-iv/queue@1.0.0": {
@@ -12,6 +14,12 @@
       },
       "@denostack/superserial@0.3.5": {
         "integrity": "081019681862c8ae32dc8d754824ef967aa1f69138c7792517bf12163250aa08"
+      },
+      "@std/datetime@0.225.2": {
+        "integrity": "45f0100554a912cd65f48089ef0a33aa1eb6ea21f08090840b539ab582827eaa"
+      },
+      "@std/fmt@1.0.2": {
+        "integrity": "87e9dfcdd3ca7c066e0c3c657c1f987c82888eb8103a3a3baa62684ffeb0f7a7"
       }
     }
   },

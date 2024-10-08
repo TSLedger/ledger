@@ -1,5 +1,5 @@
 {
-  "name": "@amethyst/ledger",
+  "name": "@ledger/ledger",
   "version": "0.0.1",
   "exports": "./mod.ts",
   // Compiler Options
