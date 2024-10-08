@@ -1,7 +1,7 @@
 import { TransportOp } from './lib/interface/op.ts';
 import type { TransportHandleMessage, TransportMessage, TransportSetPackageMessage } from './lib/interface/struct.ts';
 import type { LedgerTransport } from './lib/transport.ts';
-import { Queue } from '@cm-iv/queue';
+import { Queue } from './deps.ts';
 
 class TransportWorker {
   public static setPackageMessage: TransportSetPackageMessage;
