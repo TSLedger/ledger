@@ -109,3 +109,8 @@ export class Ledger {
     this.transports.clear();
   }
 }
+
+/** Exports for Accessing Internals. */
+export { LedgerTransport } from './lib/transport.ts';
+export type { LedgerTransportOptions, TransportHandleMessage } from './lib/interface/struct.ts';
+export { Level } from './lib/interface/level.ts';
