@@ -1,6 +1,11 @@
 import { TransportOp } from './lib/interface/op.ts';
 import type { LedgerTransportOptions, TransportHandleMessage, TransportMessage, TransportSetPackageMessage } from './lib/interface/struct.ts';
 
+/**
+ * Transport Worker Controller Class.
+ *
+ * @internal
+ */
 export class TransportWorkerController {
   private setPackageMessage: TransportSetPackageMessage;
   private heartbeat = false;
@@ -9,24 +14,27 @@ export class TransportWorkerController {
   /**
    * Initializes a Worker from a https://jsr.io/ package.
    *
-   * @param jsrPackage A jsr.io package in 'jsr:@scope/package' format.
+   * @param jsr A jsr.io package in 'jsr:@scope/package' format.
+   * @param options
    */
-  public constructor(jsrPackage: string, options: LedgerTransportOptions) {
-    if (!options.developerMode && !jsrPackage.match(/jsr:@.*\/.*$/)) {
+  public constructor(jsr: string, options: LedgerTransportOptions) {
+    if (!options.developerMode && !jsr.match(/jsr:@.*\/.*$/)) {
       throw new Error(`jsrPackage must be in 'jsr:@scope/package' format.`);
     }
     this.setPackageMessage = {
       op: TransportOp.SET_PACKAGE,
-      package: jsrPackage,
+      package: jsr,
       options,
     };
     this.createWorker();
   }
 
+  /** Emit a Message to Worker. */
   public emit(message: TransportHandleMessage): void {
     this.worker?.postMessage(message);
   }
 
+  /** Create the Worker and Assign Configuration. */
   private createWorker(): void {
     this.worker?.terminate();
     this.heartbeat = true;
@@ -46,6 +54,7 @@ export class TransportWorkerController {
     this.heartbeatWorker();
   }
 
+  /** Send Heartbeat to Worker */
   private heartbeatWorker(): void {
     // failed heartbeat (250ms)
     if (this.worker === null) return;
@@ -66,10 +75,16 @@ export class TransportWorkerController {
     }, 250);
   }
 
+  /**
+   * Restart Worker.
+   */
   public restart(): void {
     this.worker?.terminate();
   }
 
+  /**
+   * Shutdown Worker.
+   */
   public shutdown(): void {
     this.worker?.terminate();
     this.worker = null;
