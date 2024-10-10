@@ -1,3 +1,4 @@
+import { delay } from './deps.ts';
 import { TransportOp } from './lib/interface/op.ts';
 import type { LedgerTransportOptions, TransportHandleMessage, TransportMessage, TransportSetPackageMessage } from './lib/interface/struct.ts';
 
@@ -8,8 +9,9 @@ import type { LedgerTransportOptions, TransportHandleMessage, TransportMessage, 
  */
 export class TransportWorkerController {
   private setPackageMessage: TransportSetPackageMessage;
-  private heartbeat = false;
   private worker: Worker | null = null;
+  private ini = false;
+  private heartbeat = false;
 
   /**
    * Initializes a Worker from a https://jsr.io/ package.
@@ -26,7 +28,14 @@ export class TransportWorkerController {
       package: jsr,
       options,
     };
-    this.createWorker();
+    this.create();
+  }
+
+  public async awaitReady(int: number = 100): Promise<void> {
+    while (!this.ini) {
+      await delay(int);
+    }
+    return;
   }
 
   /** Emit a Message to Worker. */
@@ -35,7 +44,7 @@ export class TransportWorkerController {
   }
 
   /** Create the Worker and Assign Configuration. */
-  private createWorker(): void {
+  private create(): void {
     this.worker?.terminate();
     this.heartbeat = true;
     this.worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
@@ -45,34 +54,38 @@ export class TransportWorkerController {
           this.heartbeat = true;
           break;
         }
+        case TransportOp.SET_PACKAGE: {
+          this.ini = true;
+          this.heartbeats();
+          break;
+        }
         case TransportOp.INTERNAL_ERROR: {
           break;
         }
       }
     });
     this.worker.postMessage(this.setPackageMessage);
-    this.heartbeatWorker();
   }
 
   /** Send Heartbeat to Worker */
-  private heartbeatWorker(): void {
-    // failed heartbeat (250ms)
-    if (this.worker === null) return;
-    if (this.heartbeat === false) {
-      this.createWorker();
-      return;
-    }
+  private heartbeats(): void {
+    (async () => {
+      while (this.ini) {
+        await delay(250);
+        if (this.worker === null) {
+          break;
+        }
+        if (this.heartbeat === false) {
+          this.create();
+          break;
+        }
 
-    // success heartbeat
-    this.heartbeat = false;
-    this.worker?.postMessage({
-      op: TransportOp.HEARTBEAT,
-    });
-
-    // iterate
-    setTimeout(() => {
-      this.heartbeatWorker();
-    }, 250);
+        this.heartbeat = false;
+        this.worker?.postMessage({
+          op: TransportOp.HEARTBEAT,
+        });
+      }
+    })();
   }
 
   /**
@@ -86,6 +99,8 @@ export class TransportWorkerController {
    * Shutdown Worker.
    */
   public shutdown(): void {
+    this.ini = false;
+    this.heartbeat = false;
     this.worker?.terminate();
     this.worker = null;
   }

@@ -1,7 +1,7 @@
 import { TransportOp } from './lib/interface/op.ts';
 import type { TransportHandleMessage, TransportMessage, TransportSetPackageMessage } from './lib/interface/struct.ts';
 import type { LedgerTransport } from './lib/transport.ts';
-import { Queue } from './deps.ts';
+import { delay, Queue } from './deps.ts';
 
 /**
  * Transport Worker.
@@ -26,17 +26,24 @@ class TransportWorker {
 }
 
 // Consume from queue every 1ms.
-self.setInterval(() => {
-  if (TransportWorker.transport === null || TransportWorker.queue.isEmpty()) return;
-  TransportWorker.transport.consume(TransportWorker.queue.dequeue()!).catch((e) => {
-    self.postMessage({
-      op: TransportOp.INTERNAL_ERROR,
-      message: e.message,
-      stack: e.stack,
-      transportJsrPackage: TransportWorker.setPackageMessage.package,
-    });
-  });
-}, 1);
+// deno-lint-ignore require-await
+async function digest(): Promise<void> {
+  (async () => {
+    while (true) {
+      await delay(1);
+      if (TransportWorker.transport === null || TransportWorker.queue.isEmpty()) continue;
+      TransportWorker.transport.consume(TransportWorker.queue.dequeue()!).catch((e) => {
+        self.postMessage({
+          op: TransportOp.INTERNAL_ERROR,
+          message: e.message,
+          stack: e.stack,
+          transportJsrPackage: TransportWorker.setPackageMessage.package,
+        });
+      });
+    }
+  })();
+}
+digest();
 
 // Handle Messages.
 self.addEventListener('message', async (event: MessageEvent<TransportMessage>) => {
@@ -53,6 +60,7 @@ self.addEventListener('message', async (event: MessageEvent<TransportMessage>) =
       const message = event.data as TransportSetPackageMessage;
       const { Transport } = await import(message.package) as { Transport: typeof LedgerTransport };
       TransportWorker.setTransport(message, new Transport(message.options));
+      self.postMessage(message);
       break;
     }
     // Enqueue Ledger Message.

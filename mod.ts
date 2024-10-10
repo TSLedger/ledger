@@ -91,6 +91,17 @@ export class Ledger {
   }
 
   /**
+   * Await all transports initialized status.
+   */
+  public async await(): Promise<void> {
+    const wait: Promise<void>[] = [];
+    this.transports.forEach((v) => {
+      wait.push(v.awaitReady());
+    });
+    await Promise.all(wait);
+  }
+
+  /**
    * Restart the Transport Workers.
    */
   public restart(): void {
@@ -114,4 +125,3 @@ export class Ledger {
 export { LedgerTransport } from './lib/transport.ts';
 export type { LedgerTransportOptions, TransportHandleMessage } from './lib/interface/struct.ts';
 export { Level } from './lib/interface/level.ts';
-  

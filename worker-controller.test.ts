@@ -1,13 +1,20 @@
+import { delay } from './deps.ts';
 import { TransportWorkerController } from './worker-controller.ts';
 
-Deno.test('worker-controller.ts worker.ts', async () => {
-  const controller = new TransportWorkerController(new URL('..test/test-transport.ts', import.meta.url).toString(), {
-    developerMode: true,
-  });
-  const timeout = setTimeout(() => {
-    console.info(controller['heartbeat']);
+// deno-lint-ignore no-external-import
+import { assertEquals } from 'jsr:@std/assert';
+
+Deno.test({
+  name: 'worker-controller.ts',
+  fn: async () => {
+    const controller = new TransportWorkerController(new URL('./test/test-transport.ts', import.meta.url).toString(), {
+      developerMode: true,
+    });
+    await controller.awaitReady(1000);
+
+    assertEquals(controller['heartbeat'], true);
+
     controller.shutdown();
-    clearTimeout();
-  }, 500);
-  clearTimeout(timeout);
+    await delay(1000);
+  },
 });
