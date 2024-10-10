@@ -52,8 +52,6 @@ self.addEventListener('message', async (event: MessageEvent<TransportMessage>) =
     case TransportOp.SET_PACKAGE: {
       const message = event.data as TransportSetPackageMessage;
       const { Transport } = await import(message.package) as { Transport: typeof LedgerTransport };
-      // TODO: fix transport crash
-      console.info(Transport);
       TransportWorker.setTransport(message, new Transport(message.options));
       break;
     }
