@@ -1,4 +1,4 @@
-import { LedgerTransportOptions, TransportMessage } from '../lib/interface/struct.ts';
+import { LedgerTransportOptions, TransportHandleMessage } from '../lib/interface/struct.ts';
 import { LedgerTransport } from '../lib/transport.ts';
 
 export class Transport extends LedgerTransport {
@@ -6,7 +6,7 @@ export class Transport extends LedgerTransport {
     super(options);
   }
 
-  public override async consume(payload: TransportMessage): Promise<void> {
-    console.info(true);
+  public override async consume(payload: TransportHandleMessage): Promise<void> {
+    console.info('consume event trigger', payload.op, payload.message);
   }
 }
