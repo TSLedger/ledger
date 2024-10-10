@@ -1,4 +1,4 @@
-import type { LedgerTransportOptions, TransportMessage } from './interface/struct.ts';
+import type { LedgerTransportOptions, TransportHandleMessage } from './interface/struct.ts';
 
 /** Abstraction for Building Transports. */
 export class LedgerTransport {
@@ -16,9 +16,11 @@ export class LedgerTransport {
   /**
    * Consumer for Transport Payloads. Must be overriden.
    *
-   * @param _payload The {@link TransportMessage} instance.
+   * @param payload The {@link TransportMessage} instance.
    *
    * @abstract
    */
-  public async consume(_payload: TransportMessage): Promise<void> {}
+  public async consume(payload: TransportHandleMessage): Promise<void> {
+    throw new Error(`Method not implemented when handling consume for '${payload.op}'.`);
+  }
 }
