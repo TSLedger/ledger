@@ -96,7 +96,7 @@ export class Ledger {
   public async await(): Promise<void> {
     const wait: Promise<void>[] = [];
     this.transports.forEach((v) => {
-      wait.push(v.awaitReady());
+      wait.push(v.await());
     });
     await Promise.all(wait);
   }

@@ -12,7 +12,7 @@ Deno.test({
     const controller = new TransportWorkerController(new URL('./test/test-transport.ts', import.meta.url).toString(), {
       developerMode: true,
     });
-    await controller.awaitReady(1000);
+    await controller.await(1000);
 
     assertEquals(controller['heartbeat'], true);
     assertEquals(controller['ini'], true);

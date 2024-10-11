@@ -31,7 +31,7 @@ export class TransportWorkerController {
     this.create();
   }
 
-  public async awaitReady(int: number = 100): Promise<void> {
+  public async await(int: number = 100): Promise<void> {
     while (!this.ini) {
       await delay(int);
     }
