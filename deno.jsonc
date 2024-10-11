@@ -28,7 +28,6 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "useUnknownInCatchVariables": true,
-    "allowJs": false,
     "checkJs": false
   },
   // Linting Options
