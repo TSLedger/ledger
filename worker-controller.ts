@@ -71,7 +71,7 @@ export class TransportWorkerController {
   private heartbeats(): void {
     (async () => {
       while (this.ini) {
-        await delay(250);
+        await delay(500);
         if (this.worker === null) {
           break;
         }
