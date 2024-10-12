@@ -9,7 +9,7 @@ import { assertEquals } from 'jsr:@std/assert';
 Deno.test({
   name: 'worker-controller.ts',
   fn: async () => {
-    const controller = new TransportWorkerController(new URL('./test-transport.ts', import.meta.url).toString(), {
+    const controller = new TransportWorkerController(new URL('./helper/transport.ts', import.meta.url).toString(), {
       developerMode: true,
     });
     await controller.await(1000);

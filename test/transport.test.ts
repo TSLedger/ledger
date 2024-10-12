@@ -13,7 +13,7 @@ Deno.test('transport.ts', async (t) => {
     name: 'create',
     fn: async () => {
       const proc = await new Deno.Command('deno', {
-        args: ['run', '--allow-read', '--allow-net', './example/example-transport.ts'],
+        args: ['run', '--allow-read', '--allow-net', './test/helper/test-transport.ts'],
       });
       const output = await proc.output();
       stdout = stripAnsiCode(decoder.decode(output.stdout).trim());

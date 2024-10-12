@@ -1,5 +1,5 @@
-import { Ledger } from '../mod.ts';
-import { delay } from '../deps.ts';
+import { Ledger } from '../../mod.ts';
+import { delay } from '../../deps.ts';
 
 const ledger = new Ledger()
   .addTransportWorker('jsr:@ledger/console-transport', {});

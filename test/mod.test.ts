@@ -13,7 +13,7 @@ Deno.test('mod.ts production', async (t) => {
     name: 'create',
     fn: async () => {
       const proc = await new Deno.Command('deno', {
-        args: ['run', '--allow-read', '--allow-net', './example/example-ledger.ts'],
+        args: ['run', '--allow-read', '--allow-net', './test/helper/test-ledger.ts'],
       });
       const output = await proc.output();
       stdout = stripAnsiCode(decoder.decode(output.stdout).trim());
@@ -29,5 +29,3 @@ Deno.test('mod.ts production', async (t) => {
     },
   });
 });
-
-// Test Example Transport
