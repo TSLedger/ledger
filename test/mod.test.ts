@@ -30,9 +30,8 @@ Deno.test('mod.ts production', async (t) => {
       assertEquals(/\[.*\] INFO: Hello World \[{ test: 123 }\]/.test(stdout), true);
       assertEquals(/\[.*\] WARN: Hello World \[{ test: 123 }\]/.test(stdout), true);
       assertEquals(/\[.*\] SEVERE: Hello World \[{ test: 123 }\]/.test(stdout), true);
-      if (stderr.length !== 0) {
-        console.info(stderr);
-      }
+      console.info(stdout);
+      console.info(stderr);
       assertEquals(stderr.length, 0);
       assertEquals(code, 0);
     },
