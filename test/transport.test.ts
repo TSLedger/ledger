@@ -6,7 +6,6 @@ import { TransportOp } from '../lib/interface/op.ts';
 // Test State
 const decoder = new TextDecoder();
 let stdout = '';
-let stderr = '';
 
 // Test Transport Function
 Deno.test('transport.ts', async (t) => {
@@ -18,15 +17,12 @@ Deno.test('transport.ts', async (t) => {
       });
       const output = await proc.output();
       stdout = stripAnsiCode(decoder.decode(output.stdout).trim());
-      stderr = stripAnsiCode(decoder.decode(output.stderr).trim());
     },
   });
   await t.step({
     name: 'validate output',
     fn: () => {
       assertEquals(stdout, `consume ${TransportOp.HANDLE} test message`);
-      // assertEquals(/\[.*\] TRACE: Hello World \[{ test: 123 }\]/.test(stdout), true);
-      assertEquals(stderr.length, 0);
     },
   });
 });

@@ -6,7 +6,6 @@ import { assertEquals } from 'jsr:@std/assert/equals';
 // Test State
 const decoder = new TextDecoder();
 let stdout = '';
-let stderr = '';
 
 // Test Production
 Deno.test('mod.ts production', async (t) => {
@@ -18,7 +17,6 @@ Deno.test('mod.ts production', async (t) => {
       });
       const output = await proc.output();
       stdout = stripAnsiCode(decoder.decode(output.stdout).trim());
-      stderr = stripAnsiCode(decoder.decode(output.stderr).trim());
     },
   });
   await t.step({
