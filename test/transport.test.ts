@@ -7,7 +7,6 @@ import { TransportOp } from '../lib/interface/op.ts';
 const decoder = new TextDecoder();
 let stdout = '';
 let stderr = '';
-let code = 0;
 
 // Test Transport Function
 Deno.test('transport.ts', async (t) => {
@@ -20,7 +19,6 @@ Deno.test('transport.ts', async (t) => {
       const output = await proc.output();
       stdout = stripAnsiCode(decoder.decode(output.stdout).trim());
       stderr = stripAnsiCode(decoder.decode(output.stderr).trim());
-      code = output.code;
     },
   });
   await t.step({
