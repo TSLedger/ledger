@@ -7,7 +7,6 @@ import { assertEquals } from 'jsr:@std/assert/equals';
 const decoder = new TextDecoder();
 let stdout = '';
 let stderr = '';
-let code = 0;
 
 // Test Production
 Deno.test('mod.ts production', async (t) => {
