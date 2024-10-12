@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-external-import
+// deno-lint-ignore-file no-external-import no-console
 
 import { stripAnsiCode } from 'jsr:@std/internal/styles';
 import { assertEquals } from 'jsr:@std/assert/equals';
@@ -30,6 +30,9 @@ Deno.test('mod.ts production', async (t) => {
       assertEquals(/\[.*\] INFO: Hello World \[{ test: 123 }\]/.test(stdout), true);
       assertEquals(/\[.*\] WARN: Hello World \[{ test: 123 }\]/.test(stdout), true);
       assertEquals(/\[.*\] SEVERE: Hello World \[{ test: 123 }\]/.test(stdout), true);
+      if (stderr.length !== 0) {
+        console.info(stderr);
+      }
       assertEquals(stderr.length, 0);
       assertEquals(code, 0);
     },
