@@ -1,5 +1,5 @@
 <p align="center">
-  <img style="border-radius=50%" height="150" src="./.github/asset/cover.png">
+  <img style="border-radius=50%" height="150" src="./.github/asset/cover_base.png">
 </p>
 
 ## What is Ledger?
