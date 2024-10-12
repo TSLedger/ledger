@@ -4,6 +4,9 @@
 
 ## What is Ledger?
 
+> [!CAUTION]
+> This is a Work in Progress. APIs are subject to change and breakage.
+
 Welcome to Ledger, a batteries-included TypeScript-first Logging Framework on JSR. Compatible with Deno and Node.js.
 
 Ledger provides the fundamentals to create or utilize transports to process loggable events. These transports can range from Console, File [Rotation], Sentry, or even pure HTTP Requests. Anything that is possible with in TypeScript is possible in Ledger as you control what you do with the event.
