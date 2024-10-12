@@ -5,9 +5,6 @@ on:
     branches: [main, staging]
   pull_request:
     branches: [main, staging]
-defaults:
-  run:
-    shell: nu {0}
 
 jobs:
   validate:
