@@ -12,6 +12,7 @@
       "jsr:@std/datetime@0.225.2": "jsr:@std/datetime@0.225.2",
       "jsr:@std/fmt": "jsr:@std/fmt@1.0.2",
       "jsr:@std/fmt@1.0.2": "jsr:@std/fmt@1.0.2",
+      "jsr:@std/internal": "jsr:@std/internal@1.0.4",
       "jsr:@std/internal@^1.0.4": "jsr:@std/internal@1.0.4",
       "npm:string.ify@1.0.64": "npm:string.ify@1.0.64"
     },
