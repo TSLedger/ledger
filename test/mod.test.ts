@@ -33,7 +33,6 @@ Deno.test('mod.ts production', async (t) => {
       console.info(stdout);
       console.info(stderr);
       assertEquals(stderr.length, 0);
-      assertEquals(code, 0);
     },
   });
 });

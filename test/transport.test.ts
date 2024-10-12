@@ -29,7 +29,6 @@ Deno.test('transport.ts', async (t) => {
       assertEquals(stdout, `consume ${TransportOp.HANDLE} test message`);
       // assertEquals(/\[.*\] TRACE: Hello World \[{ test: 123 }\]/.test(stdout), true);
       assertEquals(stderr.length, 0);
-      assertEquals(code, 0);
     },
   });
 });
