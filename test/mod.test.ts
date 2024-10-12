@@ -19,7 +19,6 @@ Deno.test('mod.ts production', async (t) => {
       const output = await proc.output();
       stdout = stripAnsiCode(decoder.decode(output.stdout).trim());
       stderr = stripAnsiCode(decoder.decode(output.stderr).trim());
-      code = output.code;
     },
   });
   await t.step({
