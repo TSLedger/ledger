@@ -14,6 +14,7 @@ export interface TransportMessage {
 
 /** Transport Message for {@link TransportOp.HANDLE}. */
 export interface TransportHandleMessage extends TransportMessage {
+  op: TransportOp.HANDLE;
   level: Level;
   date: Date;
   message: string;
@@ -25,6 +26,18 @@ export interface TransportHandleMessage extends TransportMessage {
  * @internal
  */
 export interface TransportSetPackageMessage extends TransportMessage {
+  op: TransportOp.SET_PACKAGE;
   package: string;
   options: LedgerTransportOptions;
+}
+
+/**
+ * Transport Message for {@link TransportOp.INTERNAL_ERROR}.
+ * @internal
+ */
+export interface TransportInternalErrorMessage extends TransportMessage {
+  op: TransportOp.INTERNAL_ERROR;
+  message: string;
+  stack: string;
+  transportJsrPackage: string;
 }

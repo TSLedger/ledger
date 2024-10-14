@@ -9,6 +9,7 @@ import type { LedgerTransportOptions, TransportHandleMessage, TransportMessage, 
  */
 export class TransportWorkerController {
   private setPackageMessage: TransportSetPackageMessage;
+  private uid = crypto.randomUUID();
   private worker: Worker | null = null;
   private ini = false;
   private heartbeat = false;
@@ -31,13 +32,6 @@ export class TransportWorkerController {
     this.create();
   }
 
-  public async await(int: number = 100): Promise<void> {
-    while (!this.ini) {
-      await delay(int);
-    }
-    return;
-  }
-
   /** Emit a Message to Worker. */
   public emit(message: TransportHandleMessage): void {
     this.worker?.postMessage(message);
@@ -46,6 +40,8 @@ export class TransportWorkerController {
   /** Create the Worker and Assign Configuration. */
   private create(): void {
     this.worker?.terminate();
+    this.uid = crypto.randomUUID();
+    this.ini = false;
     this.heartbeat = true;
     this.worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
     this.worker.addEventListener('message', (event: MessageEvent<TransportMessage>) => {
@@ -56,10 +52,11 @@ export class TransportWorkerController {
         }
         case TransportOp.SET_PACKAGE: {
           this.ini = true;
-          this.heartbeats();
+          this.heartbeating(`${this.uid}`);
           break;
         }
         case TransportOp.INTERNAL_ERROR: {
+          this.create();
           break;
         }
       }
@@ -68,11 +65,11 @@ export class TransportWorkerController {
   }
 
   /** Send Heartbeat to Worker */
-  private heartbeats(): void {
+  private heartbeating(uid: string): void {
     (async () => {
       while (this.ini) {
         await delay(500);
-        if (this.worker === null) {
+        if (this.worker === null || this.uid !== uid) {
           break;
         }
         if (this.heartbeat === false) {
@@ -86,6 +83,14 @@ export class TransportWorkerController {
         });
       }
     })();
+  }
+
+  /** Await the Worker Controller and IWP to be initialized. */
+  public async await(int: number = 100): Promise<void> {
+    while (!this.ini) {
+      await delay(int);
+    }
+    return;
   }
 
   /**

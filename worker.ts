@@ -57,10 +57,20 @@ self.addEventListener('message', async (event: MessageEvent<TransportMessage>) =
     }
     // Self-Configure Set Package Message.
     case TransportOp.SET_PACKAGE: {
-      const message = event.data as TransportSetPackageMessage;
-      const { Transport } = await import(message.package) as { Transport: typeof LedgerTransport };
-      TransportWorker.setTransport(message, new Transport(message.options));
-      self.postMessage(message);
+      try {
+        const message = event.data as TransportSetPackageMessage;
+        const { Transport } = await import(message.package) as { Transport: typeof LedgerTransport };
+        TransportWorker.setTransport(message, new Transport(message.options));
+        self.postMessage(message);
+      } catch (e: unknown) {
+        if (!(e instanceof Error)) return;
+        self.postMessage({
+          op: TransportOp.INTERNAL_ERROR,
+          message: e.message,
+          stack: e.stack,
+          transportJsrPackage: TransportWorker.setPackageMessage.package,
+        });
+      }
       break;
     }
     // Enqueue Ledger Message.

@@ -19,21 +19,25 @@ export class Ledger {
   }
 
   /**
+   * Await all transports initialized status.
+   */
+  public async await(): Promise<Ledger> {
+    const wait: Promise<void>[] = [];
+    this.transports.forEach((v) => {
+      wait.push(v.await());
+    });
+    await Promise.all(wait);
+    return this;
+  }
+
+  /**
    * Submit a TRACE {@link Level} Severity Message to Transports.
    *
    * @param message The base message string.
    * @param args Additional context or reference objects.
    */
   public trace(message: string, ...args: unknown[]): void {
-    this.transports.forEach((v) => {
-      v.emit({
-        op: TransportOp.HANDLE,
-        level: Level.TRACE,
-        date: new Date(),
-        message,
-        args,
-      });
-    });
+    this.forwardLogEvent(Level.TRACE, message, args);
   }
 
   /**
@@ -43,15 +47,7 @@ export class Ledger {
    * @param args Additional context or reference objects.
    */
   public info(message: string, ...args: unknown[]): void {
-    this.transports.forEach((v) => {
-      v.emit({
-        op: TransportOp.HANDLE,
-        level: Level.INFO,
-        date: new Date(),
-        message,
-        args,
-      });
-    });
+    this.forwardLogEvent(Level.INFO, message, args);
   }
 
   /**
@@ -61,15 +57,7 @@ export class Ledger {
    * @param args Additional context or reference objects.
    */
   public warn(message: string, ...args: unknown[]): void {
-    this.transports.forEach((v) => {
-      v.emit({
-        op: TransportOp.HANDLE,
-        level: Level.WARN,
-        date: new Date(),
-        message,
-        args,
-      });
-    });
+    this.forwardLogEvent(Level.WARN, message, args);
   }
 
   /**
@@ -79,26 +67,7 @@ export class Ledger {
    * @param args Additional context or reference objects.
    */
   public severe(message: string, ...args: unknown[]): void {
-    this.transports.forEach((v) => {
-      v.emit({
-        op: TransportOp.HANDLE,
-        level: Level.SEVERE,
-        date: new Date(),
-        message,
-        args,
-      });
-    });
-  }
-
-  /**
-   * Await all transports initialized status.
-   */
-  public async await(): Promise<void> {
-    const wait: Promise<void>[] = [];
-    this.transports.forEach((v) => {
-      wait.push(v.await());
-    });
-    await Promise.all(wait);
+    this.forwardLogEvent(Level.SEVERE, message, args);
   }
 
   /**
@@ -118,6 +87,28 @@ export class Ledger {
       v.shutdown();
     });
     this.transports.clear();
+  }
+
+  /**
+   * Creates and Forwards a Message to all Transports.
+   *
+   * @param level
+   * @param message
+   * @param args
+   *
+   * @private
+   * @internal
+   */
+  private forwardLogEvent(level: Level, message: string, args: unknown[]): void {
+    this.transports.forEach((v) => {
+      v.emit({
+        op: TransportOp.HANDLE,
+        level: level,
+        date: new Date(),
+        message,
+        args,
+      });
+    });
   }
 }
 
