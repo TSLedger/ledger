@@ -20,7 +20,8 @@ export class LedgerTransport {
    *
    * @abstract
    */
+  // deno-lint-ignore require-await
   public async consume(payload: TransportHandleMessage): Promise<void> {
-    throw new Error(`Method not implemented when handling consume for '${payload.op}'.`);
+    throw new Error(`Method not implemented when handling consume for '${payload.op}'. This transport is incomplete.`);
   }
 }
