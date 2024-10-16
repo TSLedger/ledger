@@ -1,7 +1,18 @@
+import type { WorkerEvent } from './lib/interface/context/base.ts';
+import type { InternalWorker } from './lib/util/wrapped_worker.ts';
 
 /** WorkerController */
 export class WorkerController {
+  private workers = new Set<InternalWorker>();
 
+  public constructor() {
+  }
+
+  public ledge(event: WorkerEvent): void {
+    for (const worker of this.workers) {
+      worker.get().postMessage(event);
+    }
+  }
 }
 
 // import { delay } from './deps.ts';

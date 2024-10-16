@@ -1,5 +1,5 @@
 import { merge } from './deps.ts';
-import type { LedgerOptions } from './lib/interface/optiion.ts';
+import type { LedgerOptions } from './lib/interface/option.ts';
 import type { WorkerController } from './worker-controller.ts';
 
 /** Ledger */
@@ -8,9 +8,9 @@ export class Ledger {
   private defaults: Partial<LedgerOptions> = {
     respawn: {
       limit: 30,
-      per: 1000
-    }
-  }
+      per: 1000,
+    },
+  };
 
   /**
    * Initialize Ledger.
@@ -19,7 +19,7 @@ export class Ledger {
    */
   public constructor(options: LedgerOptions) {
     // Ensure Defaults
-    options = merge(defaults, options);
+    options = merge(this.defaults, options) as LedgerOptions;
   }
 
   /**

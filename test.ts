@@ -1,8 +1,28 @@
-import { newQueue } from 'jsr:@henrygd/queue';
 
-const queue = newQueue(5);
+console.info(self.Is)
 
-console.info('queue ready');
-queue.add(async () => {
-  console.info('async 1');
-});
+// function delay(ms: number = 1000): Promise<void> {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// }
+
+// let i = 0;
+// async function setLoop(): Promise<void> {
+//   setTimeout(() => {
+//     whi
+//   }, 0);
+//   // (async () => {
+//   // while (true) {
+//   //   i++;
+//   //   if (i % 100000 === 0) console.info(i);
+//   // }
+//   // })();
+// }
+
+// function dox(): void {
+//   delay(2000).then(() => {
+//     console.info('loop');
+//     dox();
+//   });
+// }
+// dox();
+// setLoop();
