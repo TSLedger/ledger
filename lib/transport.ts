@@ -1,15 +1,16 @@
-import type { LedgerTransportOptions, TransportHandleMessage } from './interface/struct.ts';
+import type { WorkerMessageContext } from './interface/context/base.ts';
+import type { TransportOptions } from './interface/option.ts';
 
 /** Abstraction for Building Transports. */
 export class LedgerTransport {
-  protected options: LedgerTransportOptions;
+  protected options: TransportOptions;
 
   /**
    * Create a Ledger Transport.
    *
    * @param options The {@link LedgerTransportOptions}.
    */
-  public constructor(options: LedgerTransportOptions) {
+  public constructor(options: TransportOptions) {
     this.options = options;
   }
 
@@ -21,7 +22,7 @@ export class LedgerTransport {
    * @abstract
    */
   // deno-lint-ignore require-await
-  public async consume(payload: TransportHandleMessage): Promise<void> {
+  public async consume(payload: WorkerMessageContext): Promise<void> {
     throw new Error(`Method not implemented when handling consume for '${payload.op}'. This transport is incomplete.`);
   }
 }

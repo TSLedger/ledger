@@ -1,14 +1,14 @@
 import { merge } from './deps.ts';
 import type { LedgerOptions } from './lib/interface/option.ts';
-import type { WorkerController } from './worker-controller.ts';
+import { WorkerController } from './worker-controller.ts';
 
 /** Ledger */
 export class Ledger {
-  private set: Set<WorkerController> = new Set();
+  private controller: WorkerController;
   private defaults: Partial<LedgerOptions> = {
     respawn: {
       limit: 30,
-      per: 1000,
+      ms: 1000,
     },
   };
 
@@ -18,31 +18,33 @@ export class Ledger {
    * @param options The {@link LedgerOptions}.
    */
   public constructor(options: LedgerOptions) {
-    // Ensure Defaults
+    // Ensure Defaults.
     options = merge(this.defaults, options) as LedgerOptions;
+
+    // Initialize the Controller.
+    this.controller = new WorkerController(options);
   }
 
   /**
    * Async Blocking for Initialization.
    */
-  public async await(): Promise<Ledger> {
+  public async available(): Promise<void> {
     const wait: Promise<void>[] = [];
-    this.set.forEach((v) => {
-      wait.push(v.await());
+    this.controller.workers.forEach((v) => {
+      // wait.push();
     });
     await Promise.all(wait);
-    return this;
   }
 }
 
 const ledger = new Ledger({
   workers: [{
     mode: 'jsr.io',
-    options: {},
+    transportOptions: {},
     package: '@ledger/console-transport',
   }, {
     mode: 'jsr.io',
-    options: {},
+    transportOptions: {},
     package: '@ledger/file-transport',
   }],
 });

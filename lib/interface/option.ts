@@ -7,7 +7,7 @@ export interface LedgerOptions {
     /** The maximum number of restarts for an individual worker. */
     limit: number;
     /** The rolling window in ms to decrement the respawn counter. */
-    per: number;
+    ms: number;
   };
 }
 
@@ -15,7 +15,7 @@ export interface WorkerOptions {
   /** Set the Worker Loading Mode. */
   mode: 'jsr.io' | 'alternative';
   /** Associated {@link TransportOptions}. */
-  options: TransportOptions;
+  transportOptions: TransportOptions;
   /**
    * The package to initialize. Approved JSR Types listed, but any string is allowed.
    *

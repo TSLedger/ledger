@@ -1,29 +1,31 @@
-import type { TransportOptions, WorkerOptions } from '../option.ts';
+import type { WorkerOptions } from '../option.ts';
 
 /** Operation Codes for Workers. */
 export enum Operation {
+  HEARTBEAT,
   SET_PACKAGE,
   MESSAGE,
   ENSURE,
   ERROR,
 }
 
-export type EventContexts = WorkerSetPackageContext | WorkerMessageContext;
+export type JoinedWorkerContexts = WorkerSetPackageContext | WorkerMessageContext;
 
 /** */
 export interface WorkerEvent {
   op: Operation;
 }
 
-interface WorkerSetPackageContext extends WorkerEvent {
+export interface WorkerSet
+
+export interface WorkerSetPackageContext extends WorkerEvent {
   op: Operation.SET_PACKAGE;
   context: {
-    workerOptions: WorkerOptions;
-    transportOptions: TransportOptions;
+    options: WorkerOptions;
   };
 }
 
-interface WorkerMessageContext extends WorkerEvent {
+export interface WorkerMessageContext extends WorkerEvent {
   op: Operation.MESSAGE;
   context: {
     base: string;

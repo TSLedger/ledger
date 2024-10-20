@@ -1,18 +1,24 @@
-import { type EventContexts, Operation, type WorkerEvent } from './lib/interface/context/base.ts';
-import { EventQueue } from './lib/util/queue.ts';
+import { type JoinedWorkerContexts, Operation, type WorkerEvent, type WorkerMessageContext } from '../interface/context/base.ts';
+import type { LedgerTransport } from '../transport.ts';
+import { EventQueue } from './queue.ts';
 
 /** Worker */
 export class ActualWorker {
-  private queue = new EventQueue<WorkerEvent>();
+  private queue = new EventQueue<WorkerMessageContext>();
+  private transport: LedgerTransport | null = null;
 
   public constructor() {
     self.addEventListener('message', async (event: MessageEvent<WorkerEvent>) => {
-      const evt: EventContexts = event.data as EventContexts;
+      const evt = event.data as JoinedWorkerContexts;
 
       switch (evt.op) {
+        case Operation.HEARTBEAT: {
+          self.postMessage(evt);
+          break;
+        }
         case Operation.SET_PACKAGE: {
-          // console.info(evt);
-          // TODO: Configure
+          const { Transport } = await import(evt.context.options.package) as { Transport: typeof LedgerTransport };
+          this.transport = new Transport(evt.context.options.transportOptions);
           break;
         }
         case Operation.MESSAGE: {
@@ -21,5 +27,20 @@ export class ActualWorker {
         }
       }
     });
+
+    (async () => {
+      while (this.transport !== null) {
+        await new Promise((resolve) => setTimeout(resolve, 1));
+        const ctx = this.queue.next();
+        if (ctx === null) continue;
+        try {
+          this.transport.consume(ctx).catch((e) => {
+            // Internal Transport Error
+          });
+        } catch (e: unknown) {
+          // Worker Error
+        }
+      }
+    })();
   }
 }

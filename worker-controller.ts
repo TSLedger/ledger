@@ -1,29 +1,40 @@
-import type { WorkerEvent } from './lib/interface/context/base.ts';
-import type { InternalWorker } from './lib/util/wrapped_worker.ts';
+import { Operation, type WorkerEvent } from './lib/interface/context/base.ts';
+import type { LedgerOptions } from './lib/interface/option.ts';
+import { WrappedWorker } from './lib/util/wrapped_worker.ts';
 
 /** WorkerController */
 export class WorkerController {
-  private workers = new Set<InternalWorker>();
+  public workers = new Set<WrappedWorker>();
 
-  public constructor() {
+  public constructor(options: LedgerOptions) {
+    for (const opts of options.workers) {
+      if (opts.mode === 'jsr.io' && !/^(?:jsr:)?@.*\/.*$/.test(opts.package)) {
+        throw new Error(`Package '${opts.package}' is not valid for type 'jsr.io' formatting.`);
+      }
+      this.workers.add(
+        new WrappedWorker({
+          op: Operation.SET_PACKAGE,
+          context: {
+            options: opts,
+          },
+        }),
+      );
+    }
   }
 
-  public ledge(event: WorkerEvent): void {
+  public record(event: WorkerEvent): void {
     for (const worker of this.workers) {
       worker.get().postMessage(event);
     }
   }
+
+  private heartbeat(): void {
+    for (const worker of this.workers) {
+      
+    }
+  }
 }
 
-// import { delay } from './deps.ts';
-// import { TransportOp } from './lib/interface/op.ts';
-// import type { LedgerTransportOptions, TransportHandleMessage, TransportInternalErrorMessage, TransportMessage, TransportSetPackageMessage } from './lib/interface/struct.ts';
-
-// /**
-//  * Transport Worker Controller Class.
-//  *
-//  * @internal
-//  */
 // export class TransportWorkerController {
 //   private setPackageMessage: TransportSetPackageMessage;
 //   private errorHandle: (event: TransportInternalErrorMessage) => void = () => {};
@@ -40,7 +51,7 @@ export class WorkerController {
 //    * @param options
 //    */
 //   public constructor(pkg: string, options: LedgerTransportOptions, fn: (event: TransportInternalErrorMessage) => void) {
-//     if (!options.developerMode && !pkg.match(/jsr:@.*\/.*$/)) {
+//     if (!options.developerMode && ) {
 //       throw new Error(`param 'pkg' must be in 'jsr:@scope/package' format. Enable 'developerMode' to bypass this requirement.`);
 //     }
 //     this.errorHandle = fn;
