@@ -18,7 +18,7 @@ export class ActualWorker {
         }
         case Operation.SET_PACKAGE: {
           const { Transport } = await import(evt.context.options.package) as { Transport: typeof LedgerTransport };
-          this.transport = new Transport(evt.context.options.transportOptions);
+          this.transport = new Transport(evt.context.options.opts);
           break;
         }
         case Operation.MESSAGE: {
@@ -28,19 +28,21 @@ export class ActualWorker {
       }
     });
 
-    (async () => {
-      while (this.transport !== null) {
-        await new Promise((resolve) => setTimeout(resolve, 1));
-        const ctx = this.queue.next();
-        if (ctx === null) continue;
-        try {
-          this.transport.consume(ctx).catch((e) => {
-            // Internal Transport Error
-          });
-        } catch (e: unknown) {
-          // Worker Error
-        }
-      }
-    })();
+    // (async () => {
+    //   while (this.transport !== null) {
+    //     await new Promise((resolve) => setTimeout(resolve, 1));
+    //     const ctx = this.queue.next();
+    //     if (ctx === null) continue;
+    //     try {
+    //       this.transport.consume(ctx).catch((e) => {
+    //         // Internal Transport Error
+    //       });
+    //     } catch (e: unknown) {
+    //       // Worker Error
+    //     }
+    //   }
+    // })();
   }
 }
+
+new ActualWorker();

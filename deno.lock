@@ -3,7 +3,9 @@
   "specifiers": {
     "jsr:@cm-iv/queue@1.0.0": "1.0.0",
     "jsr:@cross/deepmerge@*": "1.0.0",
+    "jsr:@cross/deepmerge@1.0.0": "1.0.0",
     "jsr:@henrygd/queue@*": "1.0.6",
+    "jsr:@jotsr/delayed@2.1.1": "2.1.1",
     "jsr:@ledger/console-transport@*": "0.0.1",
     "jsr:@std/assert@*": "1.0.6",
     "jsr:@std/async@*": "1.0.6",
@@ -26,6 +28,9 @@
     },
     "@henrygd/queue@1.0.6": {
       "integrity": "f5ff9ee41b9abcaf1b9f878cae72fdb7a3955740938871228f8cdcb75d037d8f"
+    },
+    "@jotsr/delayed@2.1.1": {
+      "integrity": "b636cc1ae8a2843412738f40c1cf5f117d909bf6986dbce7af945afd363b65b7"
     },
     "@ledger/console-transport@0.0.1": {
       "integrity": "22a60ed0050a5ef177f8220abe0623ef00b426b6a9d069e7f8e58f2c49191dfd",
@@ -74,5 +79,15 @@
         "string.bullet"
       ]
     }
+  },
+  "redirects": {
+    "https://deno.land/x/delayed/mod.ts": "https://deno.land/x/delayed@2.1.1/mod.ts"
+  },
+  "remote": {
+    "https://deno.land/x/delayed@2.1.1/mod.ts": "e0c83e0ecfa9665fd639d840210e3c1f1120b7df9dda6becc4adb3843df577e5",
+    "https://deno.land/x/delayed@2.1.1/src/interval.ts": "8c0512a3d9715b52ccf8ab7903d71e84818f4fde37db332d9138e0922c3b6338",
+    "https://deno.land/x/delayed@2.1.1/src/sleep.ts": "c33a9cfa99ccbcfdde00c0a23a039ee2037570c42f4b22a59f63804893e3796a",
+    "https://deno.land/x/delayed@2.1.1/src/timeout.ts": "f0e190b3e90bb82813677d0ee2e2705ac9994ca211129ad421d51d6deb5f8267",
+    "https://deno.land/x/delayed@2.1.1/types.ts": "0e969b63df147da69aea05b3e156499819089f48cac34e5041482e006c71c9fb"
   }
 }

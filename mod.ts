@@ -35,19 +35,31 @@ export class Ledger {
     });
     await Promise.all(wait);
   }
+
+  /**
+   * Async Blocking for Shutdown.
+   */
+  public async shutdown(): Promise<void> {
+    return await this.controller.shutdown();
+  }
 }
 
 const ledger = new Ledger({
   workers: [{
     mode: 'jsr.io',
-    transportOptions: {},
+    opts: {},
     package: '@ledger/console-transport',
   }, {
     mode: 'jsr.io',
-    transportOptions: {},
+    opts: {},
     package: '@ledger/file-transport',
   }],
 });
+
+setTimeout(async () => {
+  console.info('shutdown');
+  await ledger.shutdown();
+}, 5000);
 
 // await ledger.available();
 

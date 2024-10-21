@@ -9,15 +9,20 @@ export enum Operation {
   ERROR,
 }
 
-export type JoinedWorkerContexts = WorkerSetPackageContext | WorkerMessageContext;
+/** */
+export type JoinedWorkerContexts = WorkerHeartbeatContext | WorkerSetPackageContext | WorkerMessageContext;
 
 /** */
 export interface WorkerEvent {
   op: Operation;
 }
 
-export interface WorkerSet
+/** */
+export interface WorkerHeartbeatContext {
+  op: Operation.HEARTBEAT;
+}
 
+/** */
 export interface WorkerSetPackageContext extends WorkerEvent {
   op: Operation.SET_PACKAGE;
   context: {
@@ -25,6 +30,7 @@ export interface WorkerSetPackageContext extends WorkerEvent {
   };
 }
 
+/** */
 export interface WorkerMessageContext extends WorkerEvent {
   op: Operation.MESSAGE;
   context: {

@@ -6,6 +6,7 @@ import { WrappedWorker } from './lib/util/wrapped_worker.ts';
 export class WorkerController {
   public workers = new Set<WrappedWorker>();
 
+  /** */
   public constructor(options: LedgerOptions) {
     for (const opts of options.workers) {
       if (opts.mode === 'jsr.io' && !/^(?:jsr:)?@.*\/.*$/.test(opts.package)) {
@@ -20,18 +21,24 @@ export class WorkerController {
         }),
       );
     }
+    for (const worker of this.workers) {
+      worker.create();
+    }
   }
 
+  /** */
   public record(event: WorkerEvent): void {
     for (const worker of this.workers) {
       worker.get().postMessage(event);
     }
   }
 
-  private heartbeat(): void {
+  public async shutdown(): Promise<void> {
+    const queue: Promise<void>[] = [];
     for (const worker of this.workers) {
-      
+      queue.push(worker.exit());
     }
+    await Promise.all(queue);
   }
 }
 

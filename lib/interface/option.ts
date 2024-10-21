@@ -15,7 +15,7 @@ export interface WorkerOptions {
   /** Set the Worker Loading Mode. */
   mode: 'jsr.io' | 'alternative';
   /** Associated {@link TransportOptions}. */
-  transportOptions: TransportOptions;
+  opts: TransportOptions;
   /**
    * The package to initialize. Approved JSR Types listed, but any string is allowed.
    *

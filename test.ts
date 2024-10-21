@@ -1,28 +1,26 @@
+import { interval } from './deps.ts';
 
-console.info(self.Is)
+let hb = false;
 
-// function delay(ms: number = 1000): Promise<void> {
-//   return new Promise((resolve) => setTimeout(resolve, ms));
-// }
+function heartbeat(): void {
+  hb = true;
+}
 
-// let i = 0;
-// async function setLoop(): Promise<void> {
-//   setTimeout(() => {
-//     whi
-//   }, 0);
-//   // (async () => {
-//   // while (true) {
-//   //   i++;
-//   //   if (i % 100000 === 0) console.info(i);
-//   // }
-//   // })();
-// }
+function got_heartbeat(): void {
+  if (!hb) return;
+  console.info('got heartbeat');
+  hb = false;
+}
 
-// function dox(): void {
-//   delay(2000).then(() => {
-//     console.info('loop');
-//     dox();
-//   });
-// }
-// dox();
-// setLoop();
+async function off_tick(): Promise<void> {
+  for await (const response of interval(heartbeat, 5, {})) {
+  }
+}
+
+async function sec_tick(): Promise<void> {
+  for await (const response of interval(got_heartbeat, 100, {})) {
+  }
+}
+
+off_tick();
+sec_tick();
