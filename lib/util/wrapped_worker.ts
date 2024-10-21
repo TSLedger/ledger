@@ -1,5 +1,6 @@
 import { interval } from '../../deps.ts';
 import { type JoinedWorkerContexts, Operation, type WorkerSetPackageContext } from '../interface/context/base.ts';
+import type { WorkerOptions } from '../interface/option.ts';
 
 /** */
 export class WrappedWorker {
@@ -7,10 +8,10 @@ export class WrappedWorker {
   private heartbeat: boolean = false;
   private shutdown: boolean = false;
   private worker: Worker | null = null;
-  private setPackageContext: WorkerSetPackageContext;
+  private options: WorkerOptions;
 
-  public constructor(setPackageContext: WorkerSetPackageContext) {
-    this.setPackageContext = setPackageContext;
+  public constructor(options: WorkerOptions) {
+    this.options = options;
   }
 
   public get(): Worker {
@@ -21,10 +22,15 @@ export class WrappedWorker {
   }
 
   public create(): void {
+    if (this.shutdown) return;
+
+    // Reset WOrker
     this.worker = null;
     this.uuid = crypto.randomUUID();
     this.heartbeat = true;
     this.worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
+
+    // Setup Heartbeat
     this.send().catch(() => {});
     this.check().catch(() => {});
     this.worker.addEventListener('message', (event: MessageEvent<JoinedWorkerContexts>) => {
@@ -34,9 +40,22 @@ export class WrappedWorker {
           this.heartbeat = true;
           break;
         }
+        case Operation.ERROR: {
+      console.info('r1');
+          this.options.exceptions(evt.context.e);
+        }
       }
     });
-    // this.worker.postMessage(this.setPackageContext);
+    this.worker.addEventListener('error', (event: ErrorEvent) => {
+      console.info('r2');
+      this.options.exceptions(event.message);
+    });
+    this.worker.postMessage({
+      op: Operation.SET_PACKAGE,
+      context: {
+        options: this.options.opts,
+      },
+    });
   }
 
   public async exit(): Promise<void> {

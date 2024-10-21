@@ -1,4 +1,4 @@
-import { type JoinedWorkerContexts, Operation, type WorkerEvent, type WorkerMessageContext } from '../interface/context/base.ts';
+import { type JoinedWorkerContexts, Operation, Operation, type WorkerEvent, type WorkerMessageContext } from '../interface/context/base.ts';
 import type { LedgerTransport } from '../transport.ts';
 import { EventQueue } from './queue.ts';
 
@@ -17,9 +17,10 @@ export class ActualWorker {
           break;
         }
         case Operation.SET_PACKAGE: {
-          const { Transport } = await import(evt.context.options.package) as { Transport: typeof LedgerTransport };
-          this.transport = new Transport(evt.context.options.opts);
-          break;
+          throw new Error('failed to configure');
+          // const { Transport } = await import(evt.context.options.package) as { Transport: typeof LedgerTransport };
+          // this.transport = new Transport(evt.context.options.opts);
+          // break;
         }
         case Operation.MESSAGE: {
           this.queue.add(evt);
@@ -45,4 +46,13 @@ export class ActualWorker {
   }
 }
 
-new ActualWorker();
+try {
+  new ActualWorker();
+} catch (e) {
+  self.postMessage({
+    op: Operation.ERROR,
+    context: {
+      e
+    }
+  })
+}

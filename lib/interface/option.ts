@@ -23,6 +23,7 @@ export interface WorkerOptions {
    */
   // deno-lint-ignore ban-types
   package: ApprovedWorkers | string & {};
+  exceptions: (e: Error) => void;
 }
 
 export interface TransportOptions {

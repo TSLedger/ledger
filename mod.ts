@@ -49,10 +49,16 @@ const ledger = new Ledger({
     mode: 'jsr.io',
     opts: {},
     package: '@ledger/console-transport',
+    exceptions: (_) => {
+      console.error(_);
+    },
   }, {
     mode: 'jsr.io',
     opts: {},
     package: '@ledger/file-transport',
+    exceptions: (_) => {
+      console.error(_);
+    },
   }],
 });
 

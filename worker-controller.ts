@@ -13,12 +13,7 @@ export class WorkerController {
         throw new Error(`Package '${opts.package}' is not valid for type 'jsr.io' formatting.`);
       }
       this.workers.add(
-        new WrappedWorker({
-          op: Operation.SET_PACKAGE,
-          context: {
-            options: opts,
-          },
-        }),
+        new WrappedWorker(opts),
       );
     }
     for (const worker of this.workers) {
@@ -33,6 +28,7 @@ export class WorkerController {
     }
   }
 
+  /** */
   public async shutdown(): Promise<void> {
     const queue: Promise<void>[] = [];
     for (const worker of this.workers) {
@@ -50,16 +46,6 @@ export class WorkerController {
 //   private worker: Worker | null = null;
 //   private ini = false;
 //   private heartbeat = false;
-
-//   /**
-//    * Initializes a Worker from a https://jsr.io/ package.
-//    *
-//    * @param pkg A jsr.io package in 'jsr:@scope/package' format.
-//    * @param options
-//    */
-//   public constructor(pkg: string, options: LedgerTransportOptions, fn: (event: TransportInternalErrorMessage) => void) {
-//     if (!options.developerMode && ) {
-//       throw new Error(`param 'pkg' must be in 'jsr:@scope/package' format. Enable 'developerMode' to bypass this requirement.`);
 //     }
 //     this.errorHandle = fn;
 //     this.setPackageMessage = {
