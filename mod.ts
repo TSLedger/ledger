@@ -1,6 +1,6 @@
 import { merge } from './deps.ts';
 import type { LedgerOptions } from './lib/interface/option.ts';
-import { WorkerController } from './worker-controller.ts';
+import { WorkerController } from './lib/worker-controller.ts';
 
 /** Ledger */
 export class Ledger {
@@ -30,9 +30,9 @@ export class Ledger {
    */
   public async available(): Promise<void> {
     const wait: Promise<void>[] = [];
-    this.controller.workers.forEach((v) => {
-      // wait.push();
-    });
+    // this.controller.workers.forEach((v) => {
+    //   // wait.push();
+    // });
     await Promise.all(wait);
   }
 
@@ -50,14 +50,7 @@ const ledger = new Ledger({
     opts: {},
     package: '@ledger/console-transport',
     exceptions: (_) => {
-      console.error(_);
-    },
-  }, {
-    mode: 'jsr.io',
-    opts: {},
-    package: '@ledger/file-transport',
-    exceptions: (_) => {
-      console.error(_);
+      console.error('ex1', _);
     },
   }],
 });

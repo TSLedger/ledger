@@ -1,4 +1,5 @@
-import { type JoinedWorkerContexts, Operation, Operation, type WorkerEvent, type WorkerMessageContext } from '../interface/context/base.ts';
+import { interval } from '../../deps.ts';
+import { type JoinedWorkerContexts, Operation, type WorkerEvent, type WorkerMessageContext } from '../interface/context/base.ts';
 import type { LedgerTransport } from '../transport.ts';
 import { EventQueue } from './queue.ts';
 
@@ -9,40 +10,34 @@ export class ActualWorker {
 
   public constructor() {
     self.addEventListener('message', async (event: MessageEvent<WorkerEvent>) => {
-      const evt = event.data as JoinedWorkerContexts;
+      try {
+        const evt = event.data as JoinedWorkerContexts;
 
-      switch (evt.op) {
-        case Operation.HEARTBEAT: {
-          self.postMessage(evt);
-          break;
+        switch (evt.op) {
+          case Operation.HEARTBEAT: {
+            self.postMessage(evt);
+            break;
+          }
+          case Operation.SET_PACKAGE: {
+            // throw new Error('failed to configure');
+            // const { Transport } = await import(evt.context.options.package) as { Transport: typeof LedgerTransport };
+            // this.transport = new Transport(evt.context.options.opts);
+            break;
+          }
+          case Operation.MESSAGE: {
+            this.queue.add(evt);
+            break;
+          }
         }
-        case Operation.SET_PACKAGE: {
-          throw new Error('failed to configure');
-          // const { Transport } = await import(evt.context.options.package) as { Transport: typeof LedgerTransport };
-          // this.transport = new Transport(evt.context.options.opts);
-          // break;
-        }
-        case Operation.MESSAGE: {
-          this.queue.add(evt);
-          break;
-        }
+      } catch (e) {
+        self.postMessage({
+          op: Operation.ERROR,
+          context: {
+            e,
+          },
+        });
       }
-    });
-
-    // (async () => {
-    //   while (this.transport !== null) {
-    //     await new Promise((resolve) => setTimeout(resolve, 1));
-    //     const ctx = this.queue.next();
-    //     if (ctx === null) continue;
-    //     try {
-    //       this.transport.consume(ctx).catch((e) => {
-    //         // Internal Transport Error
-    //       });
-    //     } catch (e: unknown) {
-    //       // Worker Error
-    //     }
-    //   }
-    // })();
+    }); 
   }
 }
 
@@ -52,7 +47,7 @@ try {
   self.postMessage({
     op: Operation.ERROR,
     context: {
-      e
-    }
-  })
+      e,
+    },
+  });
 }

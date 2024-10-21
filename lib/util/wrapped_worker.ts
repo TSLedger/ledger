@@ -1,5 +1,5 @@
 import { interval } from '../../deps.ts';
-import { type JoinedWorkerContexts, Operation, type WorkerSetPackageContext } from '../interface/context/base.ts';
+import { type JoinedWorkerContexts, Operation } from '../interface/context/base.ts';
 import type { WorkerOptions } from '../interface/option.ts';
 
 /** */
@@ -41,14 +41,9 @@ export class WrappedWorker {
           break;
         }
         case Operation.ERROR: {
-      console.info('r1');
           this.options.exceptions(evt.context.e);
         }
       }
-    });
-    this.worker.addEventListener('error', (event: ErrorEvent) => {
-      console.info('r2');
-      this.options.exceptions(event.message);
     });
     this.worker.postMessage({
       op: Operation.SET_PACKAGE,
