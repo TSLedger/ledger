@@ -5,13 +5,16 @@ import type { WorkerOptions } from '../interface/option.ts';
 /** */
 export class WrappedWorker {
   public uuid: string | null = null;
+  private options: WorkerOptions;
+  private worker: Worker | null = null;
+  private exceptions: (e: Error) => void = () => {};
+
   private heartbeat: boolean = false;
   private shutdown: boolean = false;
-  private worker: Worker | null = null;
-  private options: WorkerOptions;
 
-  public constructor(options: WorkerOptions) {
+  public constructor(options: WorkerOptions, exceptions: (e: Error) => void) {
     this.options = options;
+    this.exceptions = exceptions;
   }
 
   public get(): Worker {
@@ -41,14 +44,14 @@ export class WrappedWorker {
           break;
         }
         case Operation.ERROR: {
-          this.options.exceptions(evt.context.e);
+          this.exceptions(evt.context.e);
         }
       }
     });
     this.worker.postMessage({
       op: Operation.SET_PACKAGE,
       context: {
-        options: this.options.opts,
+        options: this.options,
       },
     });
   }

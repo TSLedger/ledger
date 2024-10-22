@@ -19,9 +19,8 @@ export class ActualWorker {
             break;
           }
           case Operation.SET_PACKAGE: {
-            // throw new Error('failed to configure');
-            // const { Transport } = await import(evt.context.options.package) as { Transport: typeof LedgerTransport };
-            // this.transport = new Transport(evt.context.options.opts);
+            const { Transport } = await import(evt.context.options.package) as { Transport: typeof LedgerTransport };
+            this.transport = new Transport(evt.context.options.opts);
             break;
           }
           case Operation.MESSAGE: {
@@ -37,7 +36,43 @@ export class ActualWorker {
           },
         });
       }
-    }); 
+    });
+
+    this.digest().catch((err) => {
+      self.postMessage({
+        op: Operation.ERROR,
+        context: {
+          e: err,
+        },
+      });
+    });
+  }
+
+  private async digest(): Promise<void> {
+    for await (
+      const _ of interval(() => {
+        const ctx = this.queue.next();
+        if (ctx === null) return true;
+        try {
+          this.transport?.consume(ctx).catch((e) => {
+            self.postMessage({
+              op: Operation.ERROR,
+              context: {
+                e,
+              },
+            });
+          });
+        } catch (e) {
+          self.postMessage({
+            op: Operation.ERROR,
+            context: {
+              e,
+            },
+          });
+        }
+        return true;
+      }, 1)
+    ) if (_ === false) break;
   }
 }
 

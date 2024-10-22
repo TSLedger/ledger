@@ -7,13 +7,13 @@ export class WorkerController {
   public workers = new Set<WrappedWorker>();
 
   /** */
-  public constructor(options: LedgerOptions) {
+  public constructor(options: LedgerOptions, exceptions: (e: Error) => void) {
     for (const opts of options.workers) {
       if (opts.mode === 'jsr.io' && !/^(?:jsr:)?@.*\/.*$/.test(opts.package)) {
         throw new Error(`Package '${opts.package}' is not valid for type 'jsr.io' formatting.`);
       }
       this.workers.add(
-        new WrappedWorker(opts),
+        new WrappedWorker(opts, exceptions),
       );
     }
     for (const worker of this.workers) {
