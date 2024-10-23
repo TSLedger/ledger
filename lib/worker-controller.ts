@@ -17,7 +17,7 @@ export class WorkerController {
       );
     }
     for (const worker of this.workers) {
-      worker.create();
+      worker.update();
     }
   }
 

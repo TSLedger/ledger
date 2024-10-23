@@ -4,13 +4,13 @@ import type { WorkerOptions } from '../interface/option.ts';
 
 /** */
 export class WrappedWorker {
-  public uuid: string | null = null;
   private options: WorkerOptions;
+  private uuid: string | null = null;
   private worker: Worker | null = null;
-  private exceptions: (e: Error) => void = () => {};
 
   private heartbeat: boolean = false;
   private shutdown: boolean = false;
+  private exceptions: (e: Error) => void = () => {};
 
   public constructor(options: WorkerOptions, exceptions: (e: Error) => void) {
     this.options = options;
@@ -19,12 +19,12 @@ export class WrappedWorker {
 
   public get(): Worker {
     if (this.worker === null && !this.shutdown) {
-      this.create();
+      this.update();
     }
     return this.worker!;
   }
 
-  public create(): void {
+  public update(): void {
     if (this.shutdown) return;
 
     // Reset WOrker
@@ -82,7 +82,7 @@ export class WrappedWorker {
       const _ of interval(() => {
         if (uuid !== this.uuid || this.shutdown) return false;
         if (!this.heartbeat) {
-          this.create();
+          this.update();
         }
         this.heartbeat = false;
         return true;
