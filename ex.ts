@@ -9,6 +9,8 @@ const ledger = new Ledger({
 }, (_) => {
   console.error('ex1', _);
 });
+await ledger.available();
+console.info('avail');
 
 setTimeout(async () => {
   console.info('shutdown');

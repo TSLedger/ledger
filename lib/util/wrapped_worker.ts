@@ -65,7 +65,7 @@ export class WrappedWorker {
       const _ of interval(() => {
         if (!this.heartbeat || !this.initialize) return false;
         return true;
-      }, 500)
+      }, 10)
     ) {
       if (_ === false) continue;
       break;
