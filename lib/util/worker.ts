@@ -21,6 +21,9 @@ export class ActualWorker {
           case Operation.SET_PACKAGE: {
             const { Transport } = await import(evt.context.options.package) as { Transport: typeof LedgerTransport };
             this.transport = new Transport(evt.context.options.opts);
+            self.postMessage({
+              op: Operation.INITIALIZED,
+            });
             break;
           }
           case Operation.MESSAGE: {

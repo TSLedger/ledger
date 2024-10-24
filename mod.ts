@@ -31,9 +31,9 @@ export class Ledger {
    */
   public async available(): Promise<void> {
     const wait: Promise<void>[] = [];
-    // this.controller.workers.forEach((v) => {
-    //   // wait.push();
-    // });
+    this.controller.workers.forEach((v) => {
+      wait.push(v.waitForReadyEvent());
+    });
     await Promise.all(wait);
   }
 

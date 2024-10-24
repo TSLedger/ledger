@@ -8,6 +8,7 @@ export class WrappedWorker {
   private uuid: string | null = null;
   private worker: Worker | null = null;
 
+  private initialize: boolean = false;
   private heartbeat: boolean = false;
   private shutdown: boolean = false;
   private exceptions: (e: Error) => void = () => {};
@@ -30,7 +31,6 @@ export class WrappedWorker {
     // Reset WOrker
     this.worker = null;
     this.uuid = crypto.randomUUID();
-    this.heartbeat = true;
     this.worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
 
     // Setup Heartbeat
@@ -41,6 +41,10 @@ export class WrappedWorker {
       switch (evt.op) {
         case Operation.HEARTBEAT: {
           this.heartbeat = true;
+          break;
+        }
+        case Operation.INITIALIZED: {
+          this.initialize = true;
           break;
         }
         case Operation.ERROR: {
@@ -56,7 +60,19 @@ export class WrappedWorker {
     });
   }
 
-  public async exit(): Promise<void> {
+  public async waitForReadyEvent(): Promise<void> {
+    for await (
+      const _ of interval(() => {
+        if (!this.heartbeat || !this.initialize) return false;
+        return true;
+      }, 500)
+    ) {
+      if (_ === false) continue;
+      break;
+    }
+  }
+
+  public exit(): void {
     this.shutdown = true;
     this.worker?.terminate();
     this.worker = null;

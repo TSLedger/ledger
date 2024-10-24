@@ -4,7 +4,7 @@ const ledger = new Ledger({
   workers: [{
     mode: 'jsr.io',
     opts: {},
-    package: '@ledger/console-transport',
+    package: 'jsr:@ledger/console-transport',
   }],
 }, (_) => {
   console.error('ex1', _);

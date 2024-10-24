@@ -29,11 +29,9 @@ export class WorkerController {
   }
 
   /** */
-  public async shutdown(): Promise<void> {
-    const queue: Promise<void>[] = [];
+  public shutdown(): void {
     for (const worker of this.workers) {
-      queue.push(worker.exit());
+      worker.exit();
     }
-    await Promise.all(queue);
   }
 }

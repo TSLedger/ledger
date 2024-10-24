@@ -3,6 +3,7 @@ import type { WorkerOptions } from '../option.ts';
 /** Operation Codes for Workers. */
 export enum Operation {
   HEARTBEAT,
+  INITIALIZED,
   SET_PACKAGE,
   MESSAGE,
   ENSURE,
@@ -10,7 +11,7 @@ export enum Operation {
 }
 
 /** */
-export type JoinedWorkerContexts = WorkerHeartbeatContext | WorkerSetPackageContext | WorkerMessageContext | WorkerErrorContext;
+export type JoinedWorkerContexts = WorkerHeartbeatContext | WorkerInitializedContext | WorkerSetPackageContext | WorkerMessageContext | WorkerErrorContext;
 
 /** */
 export interface WorkerEvent {
@@ -20,6 +21,11 @@ export interface WorkerEvent {
 /** */
 export interface WorkerHeartbeatContext {
   op: Operation.HEARTBEAT;
+}
+
+/** */
+export interface WorkerInitializedContext {
+  op: Operation.INITIALIZED;
 }
 
 /** */
