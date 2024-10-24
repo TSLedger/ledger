@@ -9,7 +9,7 @@ export class ActualWorker {
   private transport: LedgerTransport | null = null;
 
   public constructor() {
-    self.addEventListener('message', async (event: MessageEvent<WorkerEvent>) => {
+    self.addEventListener('message', (event: MessageEvent<WorkerEvent>) => {
       try {
         const evt = event.data as JoinedWorkerContexts;
 
