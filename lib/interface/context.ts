@@ -1,5 +1,3 @@
-import type { WorkerOptions } from '../option.ts';
-
 /** Operation Codes for Workers. */
 export enum Operation {
   HEARTBEAT,
@@ -7,7 +5,7 @@ export enum Operation {
   SET_PACKAGE,
   MESSAGE,
   ENSURE,
-  ERROR,
+  EXCEPT,
 }
 
 /** */
@@ -32,7 +30,7 @@ export interface WorkerInitializedContext {
 export interface WorkerSetPackageContext extends WorkerEvent {
   op: Operation.SET_PACKAGE;
   context: {
-    options: WorkerOptions;
+    options: null;
   };
 }
 
@@ -45,7 +43,7 @@ export interface WorkerMessageContext extends WorkerEvent {
 }
 
 export interface WorkerErrorContext extends WorkerEvent {
-  op: Operation.ERROR;
+  op: Operation.EXCEPT;
   context: {
     e: Error;
   };
