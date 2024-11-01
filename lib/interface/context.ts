@@ -52,6 +52,7 @@ export interface PageMessageContext extends PageEvent {
     date: Date;
     level: Level
   };
+  ensureId?: string;
 }
 
 export interface WorkerErrorContext extends PageEvent {

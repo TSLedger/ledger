@@ -1,4 +1,4 @@
-import {Level, Operation } from "./lib/interface/context.ts";
+import {Level, Operation, PageMessageContext} from "./lib/interface/context.ts";
 import {Pen} from "./lib/pen.ts";
 
 export class Ledger {
@@ -17,16 +17,18 @@ export class Ledger {
   }
 
   private write(message: string, args: unknown[], level: Level): void {
+    const ctx: PageMessageContext = {
+      op: Operation.MESSAGE,
+      context: {
+        message,
+        args,
+        level,
+        date: new Date(),
+      }
+    }
+
     this.pens.forEach((p) => {
-      p.post({
-        op: Operation.MESSAGE,
-        context: {
-          message,
-          args,
-          level,
-          date: new Date(),
-        }
-      })
+      p.post(ctx);
     });
   }
 
@@ -51,7 +53,7 @@ export class Ledger {
   }
 }
 
-interface LedgerOptions {
+export interface LedgerOptions {
   pages: PageOptions[];
 }
 
