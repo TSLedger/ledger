@@ -1,49 +1,61 @@
+import type { PageOptions } from '../../mod.ts';
+
+export enum Level {
+  TRACE,
+  INFO,
+  WARN,
+  SEVERE,
+}
+
 /** Operation Codes for Workers. */
 export enum Operation {
-  HEARTBEAT,
-  INITIALIZED,
   SET_PACKAGE,
+  INITIALIZED,
+  HEARTBEAT,
   MESSAGE,
   ENSURE,
-  EXCEPT,
+  ERROR,
 }
 
 /** */
-export type JoinedWorkerContexts = WorkerHeartbeatContext | WorkerInitializedContext | WorkerSetPackageContext | WorkerMessageContext | WorkerErrorContext;
+export type JoinedWorkerContexts = PageHeartbeatContext | PageInitializedContext | PageSetPackageContext | PageMessageContext | WorkerErrorContext;
 
 /** */
-export interface WorkerEvent {
+export interface PageEvent {
   op: Operation;
 }
 
 /** */
-export interface WorkerHeartbeatContext {
-  op: Operation.HEARTBEAT;
+export interface PageSetPackageContext extends PageEvent {
+  op: Operation.SET_PACKAGE;
+  context: {
+    options: PageOptions;
+  };
 }
 
 /** */
-export interface WorkerInitializedContext {
+export interface PageInitializedContext {
   op: Operation.INITIALIZED;
 }
 
 /** */
-export interface WorkerSetPackageContext extends WorkerEvent {
-  op: Operation.SET_PACKAGE;
-  context: {
-    options: null;
-  };
+export interface PageHeartbeatContext {
+  op: Operation.HEARTBEAT;
 }
 
 /** */
-export interface WorkerMessageContext extends WorkerEvent {
+export interface PageMessageContext extends PageEvent {
   op: Operation.MESSAGE;
   context: {
-    base: string;
+    message: string;
+    args: unknown[];
+    date: Date;
+    level: Level
   };
 }
 
-export interface WorkerErrorContext extends WorkerEvent {
-  op: Operation.EXCEPT;
+export interface WorkerErrorContext extends PageEvent {
+  op: Operation.ERROR;
   context: {
     e: Error;
   };
