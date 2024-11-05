@@ -1,6 +1,11 @@
-import {Level, Operation, PageMessageContext} from "./lib/interface/context.ts";
-import {Pen} from "./lib/pen.ts";
 
+import {Pen} from "./lib/pen.ts";
+import type {PageOptions} from "./lib/interface/page.if.ts";
+import type { PageMessageContext } from './lib/interface/context.if.ts';
+import { Op } from './lib/interface/operation.if.ts';
+import { Level } from './lib/interface/level.if.ts';
+
+// noinspection JSUnusedGlobalSymbols
 export class Ledger {
   private readonly options: LedgerOptions;
   private readonly pens: Set<Pen> = new Set();
@@ -18,7 +23,7 @@ export class Ledger {
 
   private write(message: string, args: unknown[], level: Level): void {
     const ctx: PageMessageContext = {
-      op: Operation.MESSAGE,
+      op: Op.MESSAGE,
       context: {
         message,
         args,
@@ -57,6 +62,4 @@ export interface LedgerOptions {
   pages: PageOptions[];
 }
 
-export interface PageOptions {
-  package: `@${string}/${string}` | URL;
-}
+

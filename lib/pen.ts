@@ -1,6 +1,7 @@
-import {type JoinedWorkerContexts, Operation} from "./interface/context.ts";
+import type {JoinedWorkerContexts} from "./interface/context.if.ts";
 import {interval} from "../deps.ts";
-import type { PageOptions } from '../mod.ts';
+import type { PageOptions } from './interface/page.if.ts';
+import { Op } from './interface/operation.if.ts';
 
 export class Pen extends Worker {
   public readonly options: PageOptions;
@@ -17,29 +18,27 @@ export class Pen extends Worker {
     // Add Event Listeners.
     this.addEventListener('message', (evt: MessageEvent<JoinedWorkerContexts>) => {
       switch (evt.data.op) {
-        case Operation.INITIALIZED: {
+        case Op.INITIALIZED: {
           this.initialized = true;
           break;
         }
-        case Operation.HEARTBEAT: {
+        case Op.HEARTBEAT: {
           this.heartbeat = true;
           break;
         }
-        case Operation.ERROR: {
+        case Op.ERROR: {
+          // deno-lint-ignore no-console
+          console.error(`[Ledger/NagAuthor] Unhandled Exception in Page (Worker Digestion). This is (likely) not a Ledger issue.\n`, evt.data.context.e);
           break;
         }
-        // case Operation.ENSURE: {
-        //   // TODO(xCykrix): Implement ENSURE.
-        //   break;
-        // }
       }
     });
 
     // Post Configuration.
     this.post({
-      op: Operation.SET_PACKAGE,
+      op: Op.SEND_CONFIGURATION,
       context: {
-        options: this.options
+        options: this.options.options
       }
     });
 
@@ -67,8 +66,9 @@ export class Pen extends Worker {
       }
       this.heartbeat = false;
       return true;
-    }, 100, this.internal)) {
+    }, 15, this.internal)) {
       if (!val) break;
+      if (this.internal.signal.aborted) break;
     }
   }
 
@@ -77,11 +77,12 @@ export class Pen extends Worker {
       if (this.internal.signal.aborted) return false;
       if (this.heartbeat) return true;
       this.post({
-        op: Operation.HEARTBEAT,
+        op: Op.HEARTBEAT,
       });
       return true;
-    }, 25, this.internal)) {
+    }, 5, this.internal)) {
       if (!val) break;
+      if (this.internal.signal.aborted) break;
     }
   }
 

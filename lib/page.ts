@@ -1,22 +1,28 @@
-import type {PageMessageContext} from './interface/context.ts';
-import {type JoinedWorkerContexts, Operation} from './interface/context.ts';
+import type {JoinedWorkerContexts, PageMessageContext} from './interface/context.if.ts';
+import { Op } from './interface/operation.if.ts';
+import type {PageConfigurationOptions} from './interface/page.if.ts';
 
 export abstract class Page {
+  protected options: PageConfigurationOptions | null = null;
+
   protected constructor() {
     self.addEventListener('message', (evt: MessageEvent<JoinedWorkerContexts>) => {
       try {
         switch (evt.data.op) {
-          case Operation.SET_PACKAGE: {
-            // TODO(xCykrix): Implement SET_PACKAGE.
-            break;
-          }
-          case Operation.HEARTBEAT: {
+          case Op.SEND_CONFIGURATION: {
+            this.options = evt.data.context.options;
             this.post({
-              op: Operation.HEARTBEAT,
+              op: Op.INITIALIZED,
             });
             break;
           }
-          case Operation.MESSAGE: {
+          case Op.HEARTBEAT: {
+            this.post({
+              op: Op.HEARTBEAT,
+            });
+            break;
+          }
+          case Op.MESSAGE: {
             this.receive(evt.data).catch(this.error);
             break;
           }
@@ -24,10 +30,6 @@ export abstract class Page {
       } catch (e) {
         this.error(e as Error);
       }
-    });
-
-    this.post({
-      op: Operation.INITIALIZED,
     });
   }
 
@@ -41,8 +43,8 @@ export abstract class Page {
 
   /** Post an Exception Context Message to Parent. */
   protected error(e: Error): void {
-    this.post({
-      op: Operation.ERROR,
+    self.postMessage({
+      op: Op.ERROR,
       context: {
         e,
       },
