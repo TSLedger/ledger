@@ -1,11 +1,9 @@
-
-import {Pen} from "./lib/pen.ts";
-import type {PageOptions} from "./lib/interface/page.if.ts";
+import { Pen } from './lib/pen.ts';
+import type { PageOptions } from './lib/interface/page.if.ts';
 import type { PageMessageContext } from './lib/interface/context.if.ts';
 import { Op } from './lib/interface/operation.if.ts';
 import { Level } from './lib/interface/level.if.ts';
 
-// noinspection JSUnusedGlobalSymbols
 export class Ledger {
   private readonly options: LedgerOptions;
   private readonly pens: Set<Pen> = new Set();
@@ -29,8 +27,8 @@ export class Ledger {
         args,
         level,
         date: new Date(),
-      }
-    }
+      },
+    };
 
     this.pens.forEach((p) => {
       p.post(ctx);
@@ -61,5 +59,3 @@ export class Ledger {
 export interface LedgerOptions {
   pages: PageOptions[];
 }
-
-

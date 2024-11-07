@@ -5,6 +5,31 @@
   },
   "customizations": {
     "vscode": {
+      "settings": {
+        "files.autoSave": "afterDelay",
+        "files.autoSaveDelay": 250,
+        "files.hotExit": "onExitAndWindowClose",
+        "files.insertFinalNewline": true,
+        "files.saveConflictResolution": "overwriteFileOnDisk",
+        "files.trimFinalNewlines": true,
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.minimap.enabled": false,
+        "editor.suggest.showStatusBar": true,
+        "[typescript]": {
+          "editor.defaultFormatter": "denoland.vscode-deno"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "denoland.vscode-deno"
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "vscode.json-language-features"
+        },
+        "deno.enable": true,
+        "extensions.webWorker": true,
+        "extensions.ignoreRecommendations": true
+      },
       "extensions": [
         "justjavac.vscode-deno-extensionpack"
       ]
