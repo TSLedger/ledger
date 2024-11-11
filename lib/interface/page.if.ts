@@ -1,6 +1,5 @@
-
 export interface PageOptions {
-  package: `@${string}/${string}` | URL;
+  package: URL;
   options: PageConfigurationOptions;
 }
 

@@ -1,9 +1,9 @@
 import type { Level } from './level.if.ts';
 import type { Op } from './operation.if.ts';
-import type {PageConfigurationOptions} from './page.if.ts';
+import type { PageConfigurationOptions } from './page.if.ts';
 
 /** */
-export type JoinedWorkerContexts = PageHeartbeatContext | PageSendConfigurationContext | PageInitializedContext | PageMessageContext | WorkerErrorContext;
+export type PageAllContexts = PageHeartbeatContext | PageSendConfigurationContext | PageMessageContext | WorkerErrorContext;
 
 /** */
 export interface PageEvent {
@@ -19,11 +19,6 @@ export interface PageSendConfigurationContext extends PageEvent {
 }
 
 /** */
-export interface PageInitializedContext {
-  op: Op.INITIALIZED;
-}
-
-/** */
 export interface PageHeartbeatContext {
   op: Op.HEARTBEAT;
 }
@@ -35,7 +30,7 @@ export interface PageMessageContext extends PageEvent {
     message: string;
     args: unknown[];
     date: Date;
-    level: Level
+    level: Level;
   };
 }
 
