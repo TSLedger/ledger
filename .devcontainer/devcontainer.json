@@ -20,8 +20,11 @@
         "[typescript]": {
           "editor.defaultFormatter": "denoland.vscode-deno"
         },
+        "[javascript]": {
+          "editor.defaultFormatter": null
+        },
         "[json]": {
-          "editor.defaultFormatter": "denoland.vscode-deno"
+          "editor.defaultFormatter": "vscode.json-language-features"
         },
         "[jsonc]": {
           "editor.defaultFormatter": "vscode.json-language-features"
@@ -30,9 +33,16 @@
         "extensions.webWorker": true,
         "extensions.ignoreRecommendations": true
       },
+      "devPort": 0,
       "extensions": [
+        // Editor
+        "editorconfig.editorconfig",
+        // Language
         "justjavac.vscode-deno-extensionpack",
-        "editorconfig.editorconfig"
+        // IntelliCode
+        "VisualStudioExptTeam.vscodeintellicode",
+        "VisualStudioExptTeam.vscodeintellicode-completions",
+        "VisualStudioExptTeam.intellicode-api-usage-examples"
       ]
     }
   }
