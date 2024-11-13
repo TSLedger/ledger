@@ -3,14 +3,19 @@ import { interval, Queue } from '../deps.ts';
 import type { PageOptions } from './interface/page.if.ts';
 import { Op } from './interface/operation.if.ts';
 
+/** Pen API */
 export class Pen extends Worker {
   public readonly options: PageOptions;
   public readonly queue: Queue<PageMessageContext> = new Queue();
+  public controller: AbortController = new AbortController();
 
-  public terminated = false;
   private heartbeat = false;
-  private controller: AbortController = new AbortController();
 
+  /**
+   * Initialize a Worker with {@link PageOptions}.
+   *
+   * @param options The {@link PageOptions}.
+   */
   public constructor(options: PageOptions) {
     super(options.package, { type: 'module' });
     this.options = options;
@@ -40,19 +45,25 @@ export class Pen extends Worker {
 
     // Start Intervals.
     this.pulse().catch((e) => {
+      // deno-lint-ignore no-console
       console.error(`[Ledger/NagLedgerDev] Internal Exception in Page (Worker Digestion). This is (likely) a Ledger issue. pulse()\n`, e);
       this.terminate();
     });
     this.beat().catch((e) => {
+      // deno-lint-ignore no-console
       console.error(`[Ledger/NagLedgerDev] Internal Exception in Page (Worker Digestion). This is (likely) a Ledger issue. beat()\n`, e);
       this.terminate();
     });
     this.consume().catch((e) => {
+      // deno-lint-ignore no-console
       console.error(`[Ledger/NagLedgerDev] Internal Exception in Page (Worker Digestion). This is (likely) a Ledger issue. consume()\n`, e);
       this.terminate();
     });
   }
 
+  /**
+   * Consume the Message Queue and Dispatch to Worker. (Handle Queue of Messages)
+   */
   private async consume(): Promise<void> {
     for await (
       const _ of interval(
@@ -68,6 +79,9 @@ export class Pen extends Worker {
     }
   }
 
+  /**
+   * Checks for a Pulse from the Pen. (Check Heartbeat)
+  */
   private async pulse(): Promise<void> {
     for await (
       const check of interval(
@@ -90,6 +104,9 @@ export class Pen extends Worker {
     }
   }
 
+  /**
+   * Sends a Beat to Request a Pulse from the Pen. (Send Heartbeat)
+   */
   private async beat(): Promise<void> {
     for await (
       const check of interval(
@@ -110,13 +127,20 @@ export class Pen extends Worker {
     }
   }
 
+  /**
+   * Post a {@link PageAllContexts} to your {@link Page}
+   *
+   * @param ctx A instance of {@link PageAllContexts} compatible payload.
+   */
   public post(ctx: PageAllContexts): void {
     this.postMessage(ctx);
   }
 
+  /**
+   * Terminate the Pen and Page. (Kill Worker)
+   */
   public override terminate(): void {
     this.controller.abort();
-    this.terminated = true;
     super.terminate();
   }
 }

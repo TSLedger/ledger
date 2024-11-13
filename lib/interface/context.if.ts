@@ -34,6 +34,7 @@ export interface PageMessageContext extends PageEvent {
   };
 }
 
+/** */
 export interface WorkerErrorContext extends PageEvent {
   op: Op.ERROR;
   context: {

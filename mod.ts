@@ -23,25 +23,50 @@ export class Ledger {
     }
 
     this.regenerate().catch((e) => {
+      // deno-lint-ignore no-console
       console.error('[Ledger/NagLedgerDev] Fatal Internal Exception in Ledger (API). Failed to regenerate a Pen (Worker). This is (likely) a Ledger issue.\n', e);
     });
   }
 
+  /**
+   * Send a Trace Event Message.
+   *
+   * @param message The message to emit.
+   * @param args Additional arguments to emit.
+   */
   public trace(message: string, ...args: unknown[]): void {
     if (this.controller.signal.aborted) return;
     this.write(message, args, Level.TRACE);
   }
 
+  /**
+   * Send a Info Event Message.
+   *
+   * @param message The message to emit.
+   * @param args Additional arguments to emit.
+   */
   public info(message: string, ...args: unknown[]): void {
     if (this.controller.signal.aborted) return;
     this.write(message, args, Level.INFO);
   }
 
+  /**
+   * Send a Warn Event Message.
+   *
+   * @param message The message to emit.
+   * @param args Additional arguments to emit.
+   */
   public warn(message: string, ...args: unknown[]): void {
     if (this.controller.signal.aborted) return;
     this.write(message, args, Level.WARN);
   }
 
+  /**
+   * Send a Severe Event Message.
+   *
+   * @param message The message to emit.
+   * @param args Additional arguments to emit.
+   */
   public severe(message: string, ...args: unknown[]): void {
     if (this.controller.signal.aborted) return;
     this.write(message, args, Level.SEVERE);
@@ -67,6 +92,7 @@ export class Ledger {
       },
     };
 
+    // Enqueue the Message Context to the Pen.
     this.pens.forEach((p) => {
       p.queue.enqueue(ctx);
     });
@@ -83,12 +109,14 @@ export class Ledger {
         () => {
           try {
             for (const [k, pen] of this.pens) {
-              if (pen.terminated) {
+              if (pen.controller.signal.aborted) {
                 this.pens.set(k, new Pen(pen.options));
+                // deno-lint-ignore no-console
                 console.error('[Ledger/NagPageAuthor] Unhandled Exception in Ledger (API) from Page (Worker Digestion). This is (likely) not a Ledger issue.\n', `(${k}}) Package '${pen.options.package.toString()}' exited when not expected.`);
               }
             }
           } catch (e) {
+            // deno-lint-ignore no-console
             console.error('[Ledger/NagLedgerDev] Internal Exception in Ledger (API). Failed to regenerate a Pen (Worker). This is (likely) a Ledger issue.\n', e);
           }
         },
