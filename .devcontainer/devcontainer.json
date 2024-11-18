@@ -25,7 +25,6 @@
         "extensions.webWorker": true,
         "extensions.ignoreRecommendations": true
       },
-      "devPort": 0,
       "extensions": [
         // Editor
         "editorconfig.editorconfig",

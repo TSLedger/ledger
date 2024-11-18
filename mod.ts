@@ -3,6 +3,7 @@ import type { PageMessageContext } from './lib/interface/context.if.ts';
 import { Level } from './lib/interface/level.if.ts';
 import { Op } from './lib/interface/operation.if.ts';
 import type { PageOptions } from './lib/interface/page.if.ts';
+import { Page } from './lib/page.ts';
 import { Pen } from './lib/pen.ts';
 
 /** Ledger API */
@@ -142,3 +143,5 @@ export interface LedgerOptions {
   /** The Pens and Pages to Initialize. */
   page: PageOptions[];
 }
+
+export { Page, type PageOptions };
