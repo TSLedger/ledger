@@ -36,7 +36,7 @@ export abstract class Page {
   }
 
   /** Receive a {@link PageMessageContext} from your {@link Pen} via the Abstracted Communication Layer. @abstract */
-  protected abstract receive(context: PageMessageContext): Promise<void>;
+  protected abstract receive({ context }: PageMessageContext): Promise<void>;
 
   /**
    * Post a {@link PageAllContexts} to your {@link Pen}.
