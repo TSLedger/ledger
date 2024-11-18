@@ -6,7 +6,7 @@ import { Op } from './interface/operation.if.ts';
  *
  * This abstracts the Worker Communications to a simplified API for consumption.
  */
-export abstract class Page {
+export class Page {
   protected options: unknown | null = null;
 
   /** Creates the Abstracted Communication Layer. */
@@ -35,8 +35,9 @@ export abstract class Page {
     });
   }
 
-  /** Receive a {@link PageMessageContext} from your {@link Pen} via the Abstracted Communication Layer. @abstract */
-  protected abstract receive({ context }: PageMessageContext): Promise<void>;
+  /** Receive a {@link PageMessageContext} from your {@link Pen} via the Abstracted Communication Layer. */
+  protected async receive({ context }: PageMessageContext): Promise<void> {
+  }
 
   /**
    * Post a {@link PageAllContexts} to your {@link Pen}.
