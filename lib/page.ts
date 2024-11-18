@@ -10,7 +10,7 @@ export abstract class Page {
   protected options: unknown | null = null;
 
   /** Creates the Abstracted Communication Layer. */
-  protected constructor() {
+  public constructor() {
     self.addEventListener('message', (evt: MessageEvent<PageAllContexts>) => {
       try {
         switch (evt.data.op) {
