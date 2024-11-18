@@ -1,30 +1,29 @@
 import type { Level } from './level.if.ts';
 import type { Op } from './operation.if.ts';
-import type { PageConfigurationOptions } from './page.if.ts';
 
-/** */
+/** The Joined Contexts for Case Statement. */
 export type PageAllContexts = PageHeartbeatContext | PageSendConfigurationContext | PageMessageContext | WorkerErrorContext;
 
-/** */
-export interface PageEvent {
+/** The Base Context Event.*/
+export interface BaseContext {
   op: Op;
 }
 
-/** */
-export interface PageSendConfigurationContext extends PageEvent {
+/** Context for Sent Configuration. */
+export interface PageSendConfigurationContext extends BaseContext {
   op: Op.SEND_CONFIGURATION;
   context: {
-    options: PageConfigurationOptions;
+    options: unknown;
   };
 }
 
-/** */
+/** Context for Heartbeats. */
 export interface PageHeartbeatContext {
   op: Op.HEARTBEAT;
 }
 
-/** */
-export interface PageMessageContext extends PageEvent {
+/** Context for Messages. */
+export interface PageMessageContext extends BaseContext {
   op: Op.MESSAGE;
   context: {
     message: string;
@@ -34,8 +33,8 @@ export interface PageMessageContext extends PageEvent {
   };
 }
 
-/** */
-export interface WorkerErrorContext extends PageEvent {
+/** Context for Worker Errors. */
+export interface WorkerErrorContext extends BaseContext {
   op: Op.ERROR;
   context: {
     e: Error;

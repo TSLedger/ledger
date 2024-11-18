@@ -1,8 +1,5 @@
+/** Options for a Page Instance. */
 export interface PageOptions {
   package: URL;
-  options: PageConfigurationOptions;
-}
-
-export interface PageConfigurationOptions {
-  struct: boolean;
+  options: unknown;
 }
