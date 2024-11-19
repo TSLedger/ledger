@@ -6,6 +6,6 @@ export interface PageHandler {
 
 /** Options for a Page Instance. */
 export interface PageOptions {
-  package: `jsr:@${string}/${string}` | {};
+  package: string;
   options: unknown;
 }
