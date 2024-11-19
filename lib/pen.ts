@@ -17,7 +17,7 @@ export class Pen extends Worker {
    * @param options The {@link PageOptions}.
    */
   public constructor(options: PageOptions) {
-    super(options.package, { type: 'module' });
+    super(new URL('./page.ts', import.meta.url), { type: 'module' });
     this.options = options;
 
     // Add Event Listeners.
@@ -39,6 +39,7 @@ export class Pen extends Worker {
     this.post({
       op: Op.SEND_CONFIGURATION,
       context: {
+        package: this.options.package.toString(),
         options: this.options.options,
       },
     });
@@ -68,7 +69,7 @@ export class Pen extends Worker {
     for await (
       const _ of interval(
         () => {
-          if (this.queue.isEmpty()) return;
+          if (this.queue.isEmpty() || !this.heartbeat) return;
           this.post(this.queue.dequeue()!);
         },
         0,
@@ -81,7 +82,7 @@ export class Pen extends Worker {
 
   /**
    * Checks for a Pulse from the Pen. (Check Heartbeat)
-  */
+   */
   private async pulse(): Promise<void> {
     for await (
       const check of interval(

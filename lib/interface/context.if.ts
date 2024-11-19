@@ -13,6 +13,7 @@ export interface BaseContext {
 export interface PageSendConfigurationContext extends BaseContext {
   op: Op.SEND_CONFIGURATION;
   context: {
+    package: string;
     options: unknown;
   };
 }

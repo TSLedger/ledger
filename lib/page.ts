@@ -1,5 +1,6 @@
-import type { PageAllContexts, PageMessageContext } from './interface/context.if.ts';
+import type { PageAllContexts } from './interface/context.if.ts';
 import { Op } from './interface/operation.if.ts';
+import type { PageHandler } from './interface/page.if.ts';
 
 /**
  * The Abstraction of a Page for a Pen to write. This is a Worker Process for a Pen.
@@ -7,14 +8,16 @@ import { Op } from './interface/operation.if.ts';
  * This abstracts the Worker Communications to a simplified API for consumption.
  */
 export class Page {
+  protected thread: PageHandler | null = null;
   protected options: unknown | null = null;
 
   /** Creates the Abstracted Communication Layer. */
   public constructor() {
-    self.addEventListener('message', (evt: MessageEvent<PageAllContexts>) => {
+    self.addEventListener('message', async (evt: MessageEvent<PageAllContexts>) => {
       try {
         switch (evt.data.op) {
           case Op.SEND_CONFIGURATION: {
+            this.thread = new (await import(evt.data.context.package.toString()) as { Page: new () => PageHandler }).Page();
             this.options = evt.data.context.options;
             break;
           }
@@ -25,18 +28,19 @@ export class Page {
             break;
           }
           case Op.MESSAGE: {
-            this.receive(evt.data).catch(this.error);
+            await this.thread?.receive(evt.data);
             break;
           }
         }
       } catch (e) {
-        this.error(e as Error);
+        self.postMessage({
+          op: Op.ERROR,
+          context: {
+            e,
+          },
+        });
       }
     });
-  }
-
-  /** Receive a {@link PageMessageContext} from your {@link Pen} via the Abstracted Communication Layer. */
-  protected async receive({ context }: PageMessageContext): Promise<void> {
   }
 
   /**
@@ -47,14 +51,6 @@ export class Page {
   protected post(ctx: PageAllContexts): void {
     self.postMessage(ctx);
   }
-
-  /** Post an {@link Error} to your {@link Pen}. */
-  protected error(e: Error): void {
-    self.postMessage({
-      op: Op.ERROR,
-      context: {
-        e,
-      },
-    });
-  }
 }
+
+new Page();
