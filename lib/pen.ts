@@ -89,6 +89,7 @@ export class Pen extends Worker {
         () => {
           if (this.controller.signal.aborted) return false;
           if (!this.heartbeat) {
+            console.info('aborthb');
             this.controller.abort();
             this.terminate();
             return false;
@@ -141,6 +142,7 @@ export class Pen extends Worker {
    * Terminate the Pen and Page. (Kill Worker)
    */
   public override terminate(): void {
+    console.info('abortterm');
     this.controller.abort();
     super.terminate();
   }

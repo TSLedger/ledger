@@ -1,6 +1,6 @@
 {
   "name": "@ledger/ledger",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "exports": "./mod.ts",
   // Compiler Options
   "compilerOptions": {

@@ -120,7 +120,7 @@ export class Ledger {
               if (pen.controller.signal.aborted) {
                 this.pens.set(k, new Pen(pen.options));
                 // deno-lint-ignore no-console
-                console.error('[Ledger/NagPageAuthor] Unhandled Exception in Ledger (API) from Page (Worker Digestion). This is (likely) not a Ledger issue.\n', `(${k}}) Package '${pen.options.package.toString()}' exited when not expected.`);
+                console.error('[Ledger/NagPageAuthor] Unhandled Exception in Ledger (API) from Page (Worker Digestion). This is (likely) not a Ledger issue.\n', `(${k}) Package '${pen.options.package.toString()}' exited when not expected.`);
               }
             }
           } catch (e) {
