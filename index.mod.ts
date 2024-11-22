@@ -18,11 +18,17 @@ export class Ledger {
    */
   public constructor(options: LedgerOptions) {
     this.options = options;
+
+    // Initialize Pens.
     for (const page of this.options.page) {
-      this.pens.set(crypto.randomUUID(), new Pen(page));
+      // Import on Thread before Initialization.
+      import(page.package.toString()).then(() => {
+        this.pens.set(crypto.randomUUID(), new Pen(page));
+      });
     }
 
-    this.regenerate().catch((e) => {
+    // Start Pen Refills.
+    this.refill().catch((e) => {
       // deno-lint-ignore no-console
       console.error('[Ledger/NagLedgerDev] Fatal Internal Exception in Ledger (API). Failed to regenerate a Pen (Worker). This is (likely) a Ledger issue.\n', e);
     });
@@ -103,11 +109,13 @@ export class Ledger {
    *
    * @internal
    */
-  private async regenerate(): Promise<void> {
+  private async refill(): Promise<void> {
+    // Iterate 100ms. Break on Abort.
     for await (
       const _ of interval(
         () => {
           try {
+            // Try to initialize aborted Pens.
             for (const [k, pen] of this.pens) {
               if (pen.controller.signal.aborted) {
                 this.pens.set(k, new Pen(pen.options));

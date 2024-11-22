@@ -13,26 +13,31 @@ export class Page {
 
   /** Creates the Abstracted Communication Layer. */
   public constructor() {
+    // Add Listeners.
     self.addEventListener('message', async (evt: MessageEvent<PageAllContexts>) => {
       try {
         switch (evt.data.op) {
+          // Handle Configuration.
           case Op.SEND_CONFIGURATION: {
             this.thread = new (await import(evt.data.context.package.toString()) as { Page: new () => PageHandler }).Page();
             this.options = evt.data.context.options;
             break;
           }
+          // Handle Heartbeats.
           case Op.HEARTBEAT: {
             this.post({
               op: Op.HEARTBEAT,
             });
             break;
           }
+          // Handle Message.
           case Op.MESSAGE: {
             await this.thread?.receive(evt.data);
             break;
           }
         }
       } catch (e) {
+        // Post Error.
         self.postMessage({
           op: Op.ERROR,
           context: {
