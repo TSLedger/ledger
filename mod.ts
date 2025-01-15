@@ -1,7 +1,13 @@
-import { Ledger, type LedgerOptions } from './index.mod.ts';
-import type { PageMessageContext } from './lib/interface/context.if.ts';
-import { Level } from './lib/interface/level.if.ts';
-import type { PageHandler, PageOptions } from './lib/interface/page.if.ts';
+import type { Binder } from './lib/binder.ts';
+import type { BinderOption } from './lib/struct/interface/options.ts';
 
-export { Ledger, Level };
-export type { LedgerOptions, PageHandler, PageMessageContext, PageOptions };
+// Original: Pen
+
+export class Ledger {
+  private readonly binders: Map<string, Binder> = new Map();
+  private readonly state: AbortController = new AbortController();
+
+  public async register(options: BinderOption): Promise<Ledger> {
+    return this;
+  }
+}
