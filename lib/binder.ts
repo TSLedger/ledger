@@ -16,5 +16,7 @@ export class Binder extends Worker {
   public constructor(options: BinderOption) {
     super(new URL('./worker.ts', import.meta.url), { type: 'module' });
     this.options = options;
+
+    // 
   }
 }
