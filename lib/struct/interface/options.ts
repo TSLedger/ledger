@@ -1,9 +1,9 @@
-import type { MessageContext } from '../export.ts';
+import type { DispatchMessageContext } from './context.ts';
 
 export interface BinderOption {
-  jsr: `jsr:@${string}/${string}`;
+  jsr: `jsr:@${string}/${string}` | string;
 }
 
 export interface WorkerHandler {
-  receive: ({ context }: MessageContext) => Promise<void>;
+  receive: ({ context }: DispatchMessageContext) => Promise<void>;
 }

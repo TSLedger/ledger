@@ -13,6 +13,9 @@ export interface AliveMessageContext extends MessageContext {
 
 export interface DispatchMessageContext extends MessageContext {
   operation: Operation.DISPATCH;
+  context: {
+    text: string;
+  };
 }
 
 export interface LedgerErrorMessageContext extends MessageContext {
