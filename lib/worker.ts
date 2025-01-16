@@ -1,7 +1,7 @@
 // Original: Page
 
 import type { MessageContext } from './struct/export.ts';
-import { Operation } from './struct/interface/context.ts';
+import { IndexedMessageContexts, Operation } from './struct/interface/context.ts';
 import type { WorkerHandler } from './struct/interface/options.ts';
 
 /** Worker for Binder. Loads  */
@@ -10,7 +10,7 @@ new class Worker {
 
   /** Initialize Worker */
   public constructor() {
-    self.addEventListener('message', async (evt: MessageEvent<MessageContext>) => {
+    self.addEventListener('message', async (evt: MessageEvent<IndexedMessageContexts>) => {
       try {
         switch (evt.data.operation) {
           case Operation.CONFIGURE_WORKER: {
@@ -21,13 +21,13 @@ new class Worker {
             });
             break;
           }
-          case Operation.HEARTBEAT: {
+          case Operation.ALIVE: {
             self.postMessage({
-              operation: Operation.HEARTBEAT,
+              operation: Operation.ALIVE,
             });
             break;
           }
-          case Operation.MESSAGE:
+          case Operation.DISPATCH:
             break;
         }
       } catch (exception: unknown) {
