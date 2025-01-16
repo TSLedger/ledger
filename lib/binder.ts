@@ -55,6 +55,12 @@ export class Binder extends Worker {
         }
       }
     });
+
+    // Start Configuration
+    self.postMessage({
+      operation: Operation.CONFIGURE_WORKER,
+      context: this.options,
+    });
   }
 
   private async sendAliveCheck(): Promise<void> {
