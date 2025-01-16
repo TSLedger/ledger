@@ -23,6 +23,7 @@ new class Worker {
             self.postMessage({
               operation: Operation.ALIVE,
             });
+            console.info('alive-worker-op');
             break;
           }
           case Operation.DISPATCH:
