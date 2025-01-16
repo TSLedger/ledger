@@ -12,7 +12,7 @@ export class Ledger {
     this.restore();
   }
 
-  public async register(options: BinderOption): Promise<Ledger> {
+  public register(options: BinderOption): Ledger {
     this.binders.set(crypto.randomUUID(), new Binder(options));
     return this;
   }
