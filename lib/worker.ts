@@ -13,7 +13,7 @@ new class Worker {
       try {
         switch (evt.data.operation) {
           case Operation.CONFIGURE_WORKER: {
-            this.handler = new (await import(evt.data.context.jsr) as { Handler: new () => WorkerHandler }).Handler();
+            this.handler = new (await import(evt.data.context.definition) as { Handler: new () => WorkerHandler }).Handler();
             self.postMessage({
               operation: Operation.CONFIGURE_WORKER,
             });
@@ -23,7 +23,6 @@ new class Worker {
             self.postMessage({
               operation: Operation.ALIVE,
             });
-            console.info('alive-worker-op');
             break;
           }
           case Operation.DISPATCH:

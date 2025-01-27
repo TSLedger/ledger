@@ -1,0 +1,15 @@
+{
+  "version": "4",
+  "specifiers": {
+    "jsr:@cm-iv/queue@1.0.0": "1.0.0",
+    "jsr:@jotsr/delayed@2.1.1": "2.1.1"
+  },
+  "jsr": {
+    "@cm-iv/queue@1.0.0": {
+      "integrity": "0dc1da37987077e765240a73f7164196fca065ce585fcb542f8db50831078f0a"
+    },
+    "@jotsr/delayed@2.1.1": {
+      "integrity": "b636cc1ae8a2843412738f40c1cf5f117d909bf6986dbce7af945afd363b65b7"
+    }
+  }
+}

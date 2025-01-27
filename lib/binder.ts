@@ -45,7 +45,6 @@ export class Binder extends Worker {
         }
         case Operation.ALIVE: {
           this.alive = true;
-          console.info('alive-binder-op');
           break;
         }
         case Operation.LEDGER_ERROR: {

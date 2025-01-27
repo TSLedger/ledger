@@ -3,7 +3,7 @@ export type IndexedMessageContexts = ConfigureWorkerMessageContext | AliveMessag
 export interface ConfigureWorkerMessageContext extends MessageContext {
   operation: Operation.CONFIGURE_WORKER;
   context: {
-    jsr: `jsr:@${string}/${string}`;
+    definition: string;
   };
 }
 

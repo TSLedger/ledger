@@ -1,7 +1,7 @@
 import type { DispatchMessageContext } from './context.ts';
 
 export interface BinderOption {
-  jsr: `jsr:@${string}/${string}` | string;
+  definition: string;
 }
 
 export interface WorkerHandler {
