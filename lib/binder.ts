@@ -1,15 +1,22 @@
-import { interval, Queue } from '../deps.ts';
+import { Queue } from '../deps.ts';
 import { type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
 import type { BinderOption } from './struct/interface/options.ts';
+import { IntervalManager } from './util/interval.ts';
 
 export class Binder extends Worker {
   public readonly options: BinderOption;
 
-  public readonly queue: Queue<IndexedMessageContexts> = new Queue();
-  public readonly state: AbortController = new AbortController();
+  // Queue
+  public readonly indexed: Queue<IndexedMessageContexts> = new Queue();
 
-  public ready = false;
-  private alive = true;
+  // State Managers
+  private readonly up = new IntervalManager();
+  private readonly send = new IntervalManager();
+  private readonly queue = new IntervalManager();
+
+  // State Variables
+  public isAlive = false;
+  private isUp = true;
 
   /**
    * Initialize a Worker with {@link BinderOption}.
@@ -20,31 +27,38 @@ export class Binder extends Worker {
     super(new URL('./worker.ts', import.meta.url), { type: 'module' });
     this.options = options;
 
-    this.addEventListener('message', async (evt: MessageEvent<IndexedMessageContexts>) => {
+    this.addEventListener('message', (evt: MessageEvent<IndexedMessageContexts>) => {
       switch (evt.data.operation) {
         case Operation.CONFIGURE_WORKER: {
           // Start Intervals.
-          this.sendAliveCheck().catch((e) => {
-            // deno-lint-ignore no-console
-            console.error(`[Ledger/NagLedgerAuthor] Internal Exception in Binder Worker (Worker Handler Parent). This is (likely) a Ledger issue. sendAliveCheck()\n`, e);
-            this.state.abort();
-            this.terminate();
-          });
-          this.verifyAliveCheck().catch((e) => {
-            // deno-lint-ignore no-console
-            console.error(`[Ledger/NagLedgerAuthor] Internal Exception in Binder Worker (Worker Handler Parent). This is (likely) a Ledger issue. verifyAliveCheck()\n`, e);
-            this.state.abort();
-            this.terminate();
-          });
-          // this.consume().catch((e) => {
-          //   // deno-lint-ignore no-console
-          //   console.error(`[Ledger/NagLedgerDev] Internal Exception in Page (Worker Digestion). This is (likely) a Ledger issue. consume()\n`, e);
-          //   this.terminate();
-          // });
+          // Send Alive Check.
+          this.send.start(() => {
+            if (this.isUp) return true;
+            this.postMessage({
+              operation: Operation.ALIVE,
+            });
+            return true;
+          }, 10);
+          // Check for Alive Response.
+          this.up.start(() => {
+            if (!this.isUp) {
+              this.terminate();
+              return false;
+            }
+            this.isUp = false;
+            return true;
+          }, 30);
+          // Process the Queue.
+          // TODO(@xCykrix): Direct Posting Mode? Skip the queue and send sync to all worker threads. Always? Optional?
+          this.queue.start(() => {
+            if (this.indexed.isEmpty()) return;
+            this.postMessage(this.indexed.dequeue());
+          }, 1);
           break;
         }
         case Operation.ALIVE: {
-          this.alive = true;
+          this.isAlive = true;
+          this.isUp = true;
           break;
         }
         case Operation.LEDGER_ERROR: {
@@ -62,43 +76,10 @@ export class Binder extends Worker {
     });
   }
 
-  private async sendAliveCheck(): Promise<void> {
-    for await (
-      const check of interval(
-        () => {
-          if (this.state.signal.aborted) return false;
-          if (!this.alive) {
-            this.state.abort();
-            this.terminate();
-            return false;
-          }
-          this.alive = false;
-          return true;
-        },
-        50,
-        this.state,
-      )
-    ) {
-      if (this.state.signal.aborted || !check) break;
-    }
-  }
-
-  private async verifyAliveCheck(): Promise<void> {
-    for await (
-      const check of interval(
-        () => {
-          if (this.state.signal.aborted) return false;
-          if (this.alive) return true;
-          this.postMessage({
-            operation: Operation.ALIVE,
-          });
-          return true;
-        },
-        15,
-        this.state,
-      )
-    ) {
-      if (this.state.signal.aborted || !check) break;
-    }
+  public override terminate(): void {
+    this.queue.stop();
+    this.up.stop();
+    this.send.stop();
+    this.terminate();
   }
 }

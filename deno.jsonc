@@ -4,7 +4,6 @@
   "exports": {
     ".": "./mod.ts",
     "./binder": "./lib/binder.ts",
-    "./page": "./lib/page.ts",
     "./struct": "./lib/struct/export.ts"
   },
   // Compiler Options

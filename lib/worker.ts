@@ -25,8 +25,10 @@ new class Worker {
             });
             break;
           }
-          case Operation.DISPATCH:
+          case Operation.DISPATCH: {
+            console.info(evt.data);
             break;
+          }
         }
       } catch (exception: unknown) {
         self.postMessage({});
