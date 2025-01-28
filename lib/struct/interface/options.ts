@@ -1,9 +1,7 @@
-import type { DispatchMessageContext } from './context.ts';
+export interface LedgerOption {
+  useDispatchQueue: boolean;
+}
 
 export interface BinderOption {
   definition: string;
-}
-
-export interface WorkerHandler {
-  receive: ({ context }: DispatchMessageContext) => Promise<void>;
 }

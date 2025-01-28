@@ -1,7 +1,7 @@
 // Original: Page
 
 import { type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
-import type { WorkerHandler } from './struct/interface/options.ts';
+import type { WorkerHandler } from './struct/interface/handler.ts';
 
 /** Worker for Binder. Loads  */
 new class Worker {
