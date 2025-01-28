@@ -9,7 +9,7 @@ export class Ledger {
 
   public constructor() {
     this.restart.start(() => {
-      this.binders.entries().filter(([_, v]) => !v.isAlive).forEach(([k, v]) => {
+      this.binders.entries().filter(([_, v]) => !v.isAlive && v.wasAlive).forEach(([k, v]) => {
         v.terminate();
         this.binders.set(crypto.randomUUID(), new Binder(v.options));
         this.binders.delete(k);

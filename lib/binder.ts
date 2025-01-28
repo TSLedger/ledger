@@ -16,6 +16,7 @@ export class Binder extends Worker {
 
   // State Variables
   public isAlive = false;
+  public wasAlive = false;
   private isUp = true;
 
   /**
@@ -58,6 +59,7 @@ export class Binder extends Worker {
         }
         case Operation.ALIVE: {
           this.isAlive = true;
+          this.wasAlive = true;
           this.isUp = true;
           break;
         }
@@ -80,6 +82,7 @@ export class Binder extends Worker {
     this.queue.stop();
     this.up.stop();
     this.send.stop();
+    this.isAlive = false;
     this.terminate();
   }
 }
