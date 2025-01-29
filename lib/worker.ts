@@ -40,6 +40,7 @@ new class Worker {
         }
       } catch (_: unknown) {
         const error = _ as Error;
+        // deno-lint-ignore no-console
         console.info(error.stack);
       }
     });
