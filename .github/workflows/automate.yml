@@ -1,10 +1,7 @@
 name: Automations
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/spec/label.yml
+  workflow_dispatch:
   label:
     types: [created, edited, deleted]
 
@@ -13,8 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: micnncim/action-label-syncer@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          manifest: .github/spec/label.yml
+          sparse-checkout: .github/spec/label.yml
+      - uses: EndBug/label-sync@v2
+        with:
+          config-file: .github/spec/label.yml
+          delete-other-labels: true
+          token: ${{ secrets.GITHUB_TOKEN }}
