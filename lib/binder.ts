@@ -1,0 +1,91 @@
+import { Queue } from '../deps.ts';
+import type { LedgerOption } from './struct/export.ts';
+import { type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
+import type { BinderOption } from './struct/interface/options.ts';
+import { IntervalManager } from './util/interval.ts';
+
+export class Binder extends Worker {
+  public readonly options: BinderOption;
+
+  // Queue
+  public readonly dispatchQueue: Queue<IndexedMessageContexts> = new Queue();
+
+  // State Managers
+  private readonly sendInterval = new IntervalManager();
+  private readonly upInterval = new IntervalManager();
+  private readonly dispatchInterval = new IntervalManager();
+
+  // State Variables
+  public isAlive = false;
+  public wasAlive = false;
+  private isUp = true;
+
+  /**
+   * Initialize a Worker with {@link BinderOption}.
+   *
+   * @param options The {@link BinderOption} to initialize.
+   */
+  public constructor(options: BinderOption, parent: LedgerOption) {
+    super(new URL('./worker.ts', import.meta.url), { type: 'module' });
+    this.options = options;
+
+    this.addEventListener('message', (evt: MessageEvent<IndexedMessageContexts>) => {
+      switch (evt.data.operation) {
+        case Operation.CONFIGURE_WORKER: {
+          // Start Intervals.
+          // Send Alive Check.
+          this.sendInterval.start(() => {
+            if (this.isUp) return true;
+            this.postMessage({
+              operation: Operation.ALIVE,
+            });
+            return true;
+          }, 10);
+          // Check for Alive Response.
+          this.upInterval.start(() => {
+            if (!this.isUp) {
+              this.terminate();
+              return false;
+            }
+            this.isUp = false;
+            return true;
+          }, 30);
+          // Process the Queue.
+          // TODO(@xCykrix): Direct Posting Mode? Skip the queue and send sync to all worker threads. Always? Optional?
+          if (parent.useAsyncDispatchQueue ?? true) {
+            this.dispatchInterval.start(() => {
+              if (this.dispatchQueue.isEmpty()) return;
+              this.postMessage(this.dispatchQueue.dequeue());
+            }, 1);
+          }
+          break;
+        }
+        case Operation.ALIVE: {
+          this.isAlive = true;
+          this.wasAlive = true;
+          this.isUp = true;
+          break;
+        }
+        case Operation.LEDGER_ERROR: {
+          // deno-lint-ignore no-console
+          console.error(`[Ledger/NagBinderAuthor] Unhandled Exception in Binder Worker (Worker Handler). This is (likely) not a Ledger issue.\n`, evt.data.context);
+          break;
+        }
+      }
+    });
+
+    // Start Configuration
+    this.postMessage({
+      operation: Operation.CONFIGURE_WORKER,
+      context: this.options,
+    });
+  }
+
+  public override terminate(): void {
+    this.dispatchInterval.stop();
+    this.upInterval.stop();
+    this.sendInterval.stop();
+    this.isAlive = false;
+    this.terminate();
+  }
+}

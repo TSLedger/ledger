@@ -1,7 +1,11 @@
 {
   "name": "@ledger/ledger",
-  "version": "0.0.11",
-  "exports": "./mod.ts",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./mod.ts",
+    "./binder": "./lib/binder.ts",
+    "./struct": "./lib/struct/export.ts"
+  },
   // Compiler Options
   "compilerOptions": {
     "lib": [
