@@ -3,8 +3,10 @@ name: Automations
 on:
   push:
     branches: [main]
-  paths:
-    - .github/spec/label.yml
+    paths:
+      - .github/spec/label.yml
+  label:
+    types: [created, edited, deleted]
 
 jobs:
   label-spec:
