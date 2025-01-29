@@ -14,7 +14,7 @@ jobs:
   setting-spec:
     runs-on: ubuntu-latest
     steps:
-      - uses: mooseburgr/repository-settings-action@v1
+      - uses: mooseburgr/repository-settings-action@v0.1.3
         with:
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           settings-path: https://raw.githubusercontent.com/TSLedger/.github/refs/heads/main/.github/spec/setting.yml
