@@ -26,12 +26,21 @@ new class Worker {
             break;
           }
           case Operation.DISPATCH: {
-            console.info(evt.data);
+            this.handler?.receive({
+              operation: Operation.DISPATCH,
+              context: {
+                q: evt.data.context.q,
+                args: evt.data.context.args,
+                date: evt.data.context.date,
+                level: evt.data.context.level,
+              },
+            });
             break;
           }
         }
-      } catch (exception: unknown) {
-        self.postMessage({});
+      } catch (_: unknown) {
+        const error = _ as Error;
+        console.info(error.stack);
       }
     });
   }

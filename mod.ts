@@ -99,6 +99,7 @@ export class Ledger {
           });
         } catch (_: unknown) {
           const error = _ as Error;
+          // deno-lint-ignore no-console
           console.error('ImmediateDispatch: Failed', error.stack);
         }
       });
