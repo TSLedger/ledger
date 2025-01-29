@@ -1,23 +1,22 @@
----
-- color: 0E8A16
+- color: '0E8A16'
   name: 'State: Help Wanted'
 - color: '000000'
   name: 'State: Blocked'
-- color: C5DEF5
+- color: 'C5DEF5'
   name: 'State: Postponed'
-- color: 5319E7
+- color: '5319E7'
   name: 'State: Work in Progress'
-- color: 1D76DB
+- color: '1D76DB'
   name: 'Type: Enhancement'
-- color: B60205
+- color: 'B60205'
   name: 'Type: Bug'
-- color: FBCA04
+- color: 'FBCA04'
   name: 'Type: Infrastructure'
-- color: D4C5F9
+- color: 'D4C5F9'
   name: 'Type: Dependencies'
-- color: BFDADC
+- color: 'BFDADC'
   name: 'Meta: Question'
-- color: BFDADC
+- color: 'BFDADC'
   name: 'Meta: Duplicate'
 - color: '000000'
   name: 'Priority: 0 Critical'
@@ -25,9 +24,9 @@
   name: 'Priority: 1 High'
 - color: FEF2C0
   name: 'Priority: 2 Medium'
-- color: D4C5F9
+- color: 'D4C5F9'
   name: 'Priority: 3 Low'
 - color: '808080'
   name: 'Meta: Abandoned / No Fix'
-- color: 27828C
+- color: '27828C'
   name: 'Meta: Conversation'
