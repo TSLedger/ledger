@@ -1,4 +1,5 @@
 import { Queue } from '../deps.ts';
+import type { LedgerOption } from './struct/export.ts';
 import { type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
 import type { BinderOption } from './struct/interface/options.ts';
 import { IntervalManager } from './util/interval.ts';
@@ -7,12 +8,12 @@ export class Binder extends Worker {
   public readonly options: BinderOption;
 
   // Queue
-  public readonly indexed: Queue<IndexedMessageContexts> = new Queue();
+  public readonly dispatchQueue: Queue<IndexedMessageContexts> = new Queue();
 
   // State Managers
-  private readonly up = new IntervalManager();
-  private readonly send = new IntervalManager();
-  private readonly queue = new IntervalManager();
+  private readonly sendInterval = new IntervalManager();
+  private readonly upInterval = new IntervalManager();
+  private readonly dispatchInterval = new IntervalManager();
 
   // State Variables
   public isAlive = false;
@@ -24,7 +25,7 @@ export class Binder extends Worker {
    *
    * @param options The {@link BinderOption} to initialize.
    */
-  public constructor(options: BinderOption) {
+  public constructor(options: BinderOption, parent: LedgerOption) {
     super(new URL('./worker.ts', import.meta.url), { type: 'module' });
     this.options = options;
 
@@ -33,7 +34,7 @@ export class Binder extends Worker {
         case Operation.CONFIGURE_WORKER: {
           // Start Intervals.
           // Send Alive Check.
-          this.send.start(() => {
+          this.sendInterval.start(() => {
             if (this.isUp) return true;
             this.postMessage({
               operation: Operation.ALIVE,
@@ -41,7 +42,7 @@ export class Binder extends Worker {
             return true;
           }, 10);
           // Check for Alive Response.
-          this.up.start(() => {
+          this.upInterval.start(() => {
             if (!this.isUp) {
               this.terminate();
               return false;
@@ -51,10 +52,12 @@ export class Binder extends Worker {
           }, 30);
           // Process the Queue.
           // TODO(@xCykrix): Direct Posting Mode? Skip the queue and send sync to all worker threads. Always? Optional?
-          this.queue.start(() => {
-            if (this.indexed.isEmpty()) return;
-            this.postMessage(this.indexed.dequeue());
-          }, 1);
+          if (parent.useAsyncDispatchQueue ?? true) {
+            this.dispatchInterval.start(() => {
+              if (this.dispatchQueue.isEmpty()) return;
+              this.postMessage(this.dispatchQueue.dequeue());
+            }, 1);
+          }
           break;
         }
         case Operation.ALIVE: {
@@ -79,9 +82,9 @@ export class Binder extends Worker {
   }
 
   public override terminate(): void {
-    this.queue.stop();
-    this.up.stop();
-    this.send.stop();
+    this.dispatchInterval.stop();
+    this.upInterval.stop();
+    this.sendInterval.stop();
     this.isAlive = false;
     this.terminate();
   }

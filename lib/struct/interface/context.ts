@@ -1,3 +1,5 @@
+import type { Level } from './level.ts';
+
 export type IndexedMessageContexts = ConfigureWorkerMessageContext | AliveMessageContext | DispatchMessageContext | LedgerErrorMessageContext;
 
 export interface ConfigureWorkerMessageContext extends MessageContext {
@@ -13,9 +15,15 @@ export interface AliveMessageContext extends MessageContext {
 
 export interface DispatchMessageContext extends MessageContext {
   operation: Operation.DISPATCH;
-  context: {
-    text: string;
+  context: DispatchMessageContextPassthrough & {
+    date: Date;
+    level: Level;
   };
+}
+
+export interface DispatchMessageContextPassthrough {
+  q?: string | Error | undefined;
+  args?: unknown[] | undefined;
 }
 
 export interface LedgerErrorMessageContext extends MessageContext {
