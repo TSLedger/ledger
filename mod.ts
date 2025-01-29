@@ -38,7 +38,6 @@ export class Ledger {
     return this;
   }
 
-  /**  */
   public trace(message?: string, ...args: unknown[]): void {
     this.dispatch(Level.TRACE, {
       q: message,
