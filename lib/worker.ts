@@ -1,5 +1,6 @@
 // Original: Page
 
+import { BinderOption } from './struct/export.ts';
 import { type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
 import type { WorkerHandler } from './struct/interface/handler.ts';
 
@@ -13,7 +14,7 @@ new class Worker {
       try {
         switch (evt.data.operation) {
           case Operation.CONFIGURE_WORKER: {
-            this.handler = new (await import(evt.data.context.definition) as { Handler: new () => WorkerHandler }).Handler();
+            this.handler = new (await import(evt.data.context.definition) as { Handler: new (option: BinderOption) => WorkerHandler }).Handler(evt.data.context);
             self.postMessage({
               operation: Operation.CONFIGURE_WORKER,
             });
