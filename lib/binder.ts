@@ -82,10 +82,10 @@ export class Binder extends Worker {
   }
 
   public override terminate(): void {
-    this.dispatchInterval.stop();
-    this.upInterval.stop();
-    this.sendInterval.stop();
+    if (this.dispatchInterval.running()) this.dispatchInterval.stop();
+    if (this.upInterval.running()) this.upInterval.stop();
+    if (this.sendInterval.running()) this.sendInterval.stop();
     this.isAlive = false;
-    this.terminate();
+    super.terminate();
   }
 }

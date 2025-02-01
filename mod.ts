@@ -33,7 +33,7 @@ export class Ledger {
    * @param options The {@link BinderOption} to register.
    * @returns {@link Ledger}
    */
-  public register(options: BinderOption): Ledger {
+  public register<T extends BinderOption>(options: T): Ledger {
     this.binders.set(crypto.randomUUID(), new Binder(options, this.options));
     return this;
   }
@@ -103,6 +103,11 @@ export class Ledger {
         }
       });
     }
+  }
+
+  public async alive(): Promise<void> {
+    // TODO(@xCykrix): Properly await Binder startup.
+    return await new Promise((resolve) => setTimeout(resolve, 3000));
   }
 
   /**
