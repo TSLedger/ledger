@@ -1,6 +1,6 @@
 // Original: Page
 
-import { BinderOption } from './struct/export.ts';
+import type { BinderOption } from './struct/export.ts';
 import { type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
 import type { WorkerHandler } from './struct/interface/handler.ts';
 

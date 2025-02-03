@@ -114,7 +114,7 @@ export class Ledger {
    * Terminate Ledger and Workers Immediately.
    */
   public terminate(): void {
-    this.restart.stop();
+    if (this.restart.running()) this.restart.stop();
     this.binders.forEach((binder) => {
       binder.terminate();
     });
