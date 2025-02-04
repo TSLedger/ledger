@@ -38,6 +38,12 @@ export class Ledger {
     return this;
   }
 
+  /**
+   * Dispatches a Trace Event Message.
+   *
+   * @param message
+   * @param args
+   */
   public trace(message?: string, ...args: unknown[]): void {
     this.dispatch(Level.TRACE, {
       q: message,
@@ -45,6 +51,11 @@ export class Ledger {
     });
   }
 
+  /**
+   * Dispatches a Information Event Message.
+   * @param message
+   * @param args
+   */
   public information(message?: string, ...args: unknown[]): void {
     this.dispatch(Level.INFORMATION, {
       q: message,
@@ -52,6 +63,12 @@ export class Ledger {
     });
   }
 
+  /**
+   * Dispatches a Warning Event Message.
+   *
+   * @param message
+   * @param args
+   */
   public warning(message?: string, ...args: unknown[]): void {
     this.dispatch(Level.WARNING, {
       q: message,
@@ -59,6 +76,12 @@ export class Ledger {
     });
   }
 
+  /**
+   * Dispatches a Severe Event Message.
+   *
+   * @param message A string or Error to dispatch.
+   * @param args
+   */
   public severe(message?: string | Error, ...args: unknown[]): void {
     this.dispatch(Level.SEVERE, {
       q: message,
@@ -106,8 +129,9 @@ export class Ledger {
   }
 
   public async alive(): Promise<void> {
-    // TODO(@xCykrix): Properly await Binder startup.
-    return await new Promise((resolve) => setTimeout(resolve, 3000));
+    while (this.binders.values().toArray().filter((v) => !v.isAlive).length > 0) {
+      await new Promise((resolve) => setTimeout(resolve, 5));
+    }
   }
 
   /**
