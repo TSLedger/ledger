@@ -13,12 +13,13 @@ Ledger provides the structure to create or utilize a binder to process loggable 
 
 ## What is a Binder?
 
-A Ledger Binder (Transport) is simply a managed worker instance that receives a payload from the Ledger API. You can leverage an infinite amount of transports all working side-by-side. You can utilize pre-built transports or publish one you create.
+A Ledger Binder (Handler) is simply a managed worker instance that receives a payload from the Ledger API. You can leverage an infinite amount of handlers all working side-by-side. You can utilize pre-built handlers or publish one you create.
 
-Binders must be published to JSR.
+We recommend publishing binders to JSR.
 
 Features:
-- Binders using a Worker reduces the burden of Event Loop and enables async function.
+
+- Binders using a Worker reduces the burden of Event Loop and enables async functionality.
 - Binders will automatically restore in the event of a critical failure.
 
 ## Getting Started
@@ -27,25 +28,25 @@ If you are ready to give Ledger a try, you can get started with a snippet such a
 
 ```ts
 import { Ledger } from 'jsr:@ledger/ledger';
-import { delay } from 'jsr:@std/async@1.0.6/delay';
 
-const ledger = new Ledger() // Create Ledger.
-  .addTransportWorker('jsr:@ledger/console-transport', {}); // Adds the default Console Transport.
-await ledger.await(); // Waits for startup. This is optional.s
+const ledger = new Ledger({
+  useAsyncDispatchQueue: true, //  or false for ImmediateDispatch mode.
+})
+  .register({
+    definition: 'jsr:@ledger/console-handler@0.0.0', // Version is Important. Please verify the latest version. See: https://jsr.io/@ledger for official handlers.
+  });
+await ledger.alive();
 
-// All Level Types.
-ledger.trace('Hello World', { test: 123 });
-ledger.info('Hello World', { test: 123 });
-ledger.warn('Hello World', { test: 123 });
-ledger.severe('Hello World', { test: 123 });
+// ledger.trace, ledger.information, ledger.warning, ledger.severe
+ledger.information('Hello, world');
 
-await delay(1000); // Optional - Applied for Tests. Ledger has a slight delay in logging.
-ledger.shutdown(); // Required for process to exit. This shuts down the workers and auto recover process.
+// Eventually...
+ledger.terminate();
 ```
 
 ## Additional Documentation
 
-Please visit the JSR Symbol Documentation at [JSR Docs](https://jsr.io/@ledger/ledger/doc) or the [GitHub Wiki](https://github.com/TSLedger/ledger/wiki) for additional examples and transport documentation.
+Please visit the JSR Symbol Documentation at [JSR Docs](https://jsr.io/@ledger/ledger/doc) or the [GitHub Wiki](https://github.com/TSLedger/ledger/wiki) for additional examples and handler documentation.
 
 ## Support
 
