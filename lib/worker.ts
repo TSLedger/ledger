@@ -10,8 +10,10 @@ new class Worker {
 
   /** Initialize Worker */
   public constructor() {
+    // Create Event Handler
     self.addEventListener('message', async (evt: MessageEvent<IndexedMessageContexts>) => {
       try {
+        // Handle Events
         switch (evt.data.operation) {
           case Operation.CONFIGURE_WORKER: {
             this.handler = new (await import(evt.data.context.definition) as { Handler: new (option: BinderOption) => WorkerHandler }).Handler(evt.data.context);
@@ -40,9 +42,7 @@ new class Worker {
           }
         }
       } catch (_: unknown) {
-        const error = _ as Error;
-        // deno-lint-ignore no-console
-        console.info(error.stack);
+        // no-op
       }
     });
   }

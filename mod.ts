@@ -128,6 +128,9 @@ export class Ledger {
     }
   }
 
+  /**
+   * Await for all Binders to be indicated as alive.
+   */
   public async alive(): Promise<void> {
     while (this.binders.values().toArray().filter((v) => !v.isAlive).length > 0) {
       await new Promise((resolve) => setTimeout(resolve, 5));

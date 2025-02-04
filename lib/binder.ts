@@ -29,7 +29,9 @@ export class Binder extends Worker {
     super(new URL('./worker.ts', import.meta.url), { type: 'module' });
     this.options = options;
 
+    // Create Event Handler
     this.addEventListener('message', (evt: MessageEvent<IndexedMessageContexts>) => {
+      // Handle Events
       switch (evt.data.operation) {
         case Operation.CONFIGURE_WORKER: {
           // Start Intervals.
@@ -51,7 +53,6 @@ export class Binder extends Worker {
             return true;
           }, 30);
           // Process the Queue.
-          // TODO(@xCykrix): Direct Posting Mode? Skip the queue and send sync to all worker threads. Always? Optional?
           if (parent.useAsyncDispatchQueue ?? true) {
             this.dispatchInterval.start(() => {
               if (this.dispatchQueue.isEmpty()) return;
@@ -81,6 +82,7 @@ export class Binder extends Worker {
     });
   }
 
+  /** Terminate the Binder. */
   public override terminate(): void {
     if (this.dispatchInterval.running()) this.dispatchInterval.stop();
     if (this.upInterval.running()) this.upInterval.stop();

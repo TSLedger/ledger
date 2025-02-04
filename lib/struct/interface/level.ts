@@ -1,3 +1,4 @@
+/** Ordered Level Events. */
 export enum Level {
   NONE,
   TRACE,
