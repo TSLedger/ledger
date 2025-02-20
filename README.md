@@ -29,12 +29,16 @@ If you are ready to give Ledger a try, you can get started with a snippet such a
 ```ts
 import { Ledger } from 'jsr:@ledger/ledger';
 
+// Initialize Ledger
 const ledger = new Ledger({
   useAsyncDispatchQueue: true, //  or false for ImmediateDispatch mode.
 })
-  .register({
-    definition: 'jsr:@ledger/console-handler@0.0.0', // Version is Important. Please verify the latest version. See: https://jsr.io/@ledger for official handlers.
-  });
+// Register a Handler. You can chain these too!
+ledger.register({
+  definition: 'jsr:@ledger/console-handler@0.0.0', // Version is Important. Please verify the latest version. See: https://jsr.io/@ledger for official handlers.
+});
+
+// Await Ledger to be alive and functional.
 await ledger.alive();
 
 // ledger.trace, ledger.information, ledger.warning, ledger.severe

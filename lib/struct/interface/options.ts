@@ -1,5 +1,8 @@
 /** Ledger Options. */
 export interface LedgerOption {
+  /** Identify the dispatching service identifier. */
+  service: string;
+
   /** Use the DispatchQueue of FIFO. False will post directly to Worker Threads immediately. */
   useAsyncDispatchQueue?: boolean;
 }

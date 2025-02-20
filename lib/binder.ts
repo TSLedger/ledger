@@ -78,7 +78,10 @@ export class Binder extends Worker {
     // Start Configuration
     this.postMessage({
       operation: Operation.CONFIGURE_WORKER,
-      context: this.options,
+      context: {
+        service: parent.service,
+        ...this.options,
+      },
     });
   }
 

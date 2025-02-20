@@ -7,6 +7,7 @@ export type IndexedMessageContexts = ConfigureWorkerMessageContext | AliveMessag
 export interface ConfigureWorkerMessageContext extends MessageContext {
   operation: Operation.CONFIGURE_WORKER;
   context: {
+    service: string;
     definition: string;
   };
 }

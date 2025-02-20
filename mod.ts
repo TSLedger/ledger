@@ -4,6 +4,9 @@ import { Level } from './lib/struct/interface/level.ts';
 import type { BinderOption, LedgerOption } from './lib/struct/interface/options.ts';
 import { IntervalManager } from './lib/util/interval.ts';
 
+/**
+ * Ledger is a multi-process logging interface allowing for the asynchronous distribution of event messages for services.
+ */
 export class Ledger {
   private readonly options: LedgerOption;
   private readonly binders: Map<string, Binder> = new Map();
