@@ -1,6 +1,6 @@
 {
   "name": "@ledger/ledger",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "exports": {
     ".": "./mod.ts",
     "./binder": "./lib/binder.ts",
