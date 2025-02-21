@@ -1,8 +1,8 @@
 // Original: Page
 
-import type { BinderOption } from './struct/export.ts';
-import { type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
+import { type AliveMessageContext, type DispatchMessageContext, type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
 import type { WorkerHandler } from './struct/interface/handler.ts';
+import type { ServiceBinderOption } from './struct/interface/options.ts';
 
 /** Worker for Binder. Loads  */
 new class Worker {
@@ -16,7 +16,7 @@ new class Worker {
         // Handle Events
         switch (evt.data.operation) {
           case Operation.CONFIGURE_WORKER: {
-            this.handler = new (await import(evt.data.context.definition) as { Handler: new (option: BinderOption) => WorkerHandler }).Handler(evt.data.context);
+            this.handler = new (await import(evt.data.context.definition) as { Handler: new (option: ServiceBinderOption) => WorkerHandler }).Handler(evt.data.context);
             self.postMessage({
               operation: Operation.CONFIGURE_WORKER,
             });
@@ -25,7 +25,7 @@ new class Worker {
           case Operation.ALIVE: {
             self.postMessage({
               operation: Operation.ALIVE,
-            });
+            } as AliveMessageContext);
             break;
           }
           case Operation.DISPATCH: {
@@ -37,7 +37,7 @@ new class Worker {
                 date: evt.data.context.date,
                 level: evt.data.context.level,
               },
-            });
+            } as DispatchMessageContext);
             break;
           }
         }

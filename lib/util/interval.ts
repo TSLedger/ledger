@@ -12,7 +12,7 @@ export class IntervalManager {
    */
   start(callback: () => void, interval: number): void {
     if (this.id !== null) {
-      throw new Error('IntervalManager already in use.');
+      throw new Error('This instance of the IntervalManager is already in use.');
     }
     this.id = setInterval(callback, interval);
   }

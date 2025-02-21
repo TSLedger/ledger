@@ -1,6 +1,6 @@
 import { Queue } from '../deps.ts';
 import type { LedgerOption } from './struct/export.ts';
-import { type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
+import { type AliveMessageContext, type ConfigureWorkerMessageContext, type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
 import type { BinderOption } from './struct/interface/options.ts';
 import { IntervalManager } from './util/interval.ts';
 
@@ -40,7 +40,7 @@ export class Binder extends Worker {
             if (this.isUp) return true;
             this.postMessage({
               operation: Operation.ALIVE,
-            });
+            } as AliveMessageContext);
             return true;
           }, 10);
           // Check for Alive Response.
@@ -82,7 +82,7 @@ export class Binder extends Worker {
         service: parent.service,
         ...this.options,
       },
-    });
+    } as ConfigureWorkerMessageContext);
   }
 
   /** Terminate the Binder. */
