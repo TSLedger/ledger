@@ -1,4 +1,4 @@
-import { Binder } from './lib/binder.ts';
+import { Handler } from './lib/handler.ts';
 import { type DispatchMessageContextPassthrough, Operation } from './lib/struct/interface/context.ts';
 import { Level } from './lib/struct/interface/level.ts';
 import type { BinderOption, LedgerOption } from './lib/struct/interface/options.ts';
@@ -9,7 +9,7 @@ import { IntervalManager } from './lib/util/interval.ts';
  */
 export class Ledger {
   private readonly options: LedgerOption;
-  private readonly binders: Map<string, Binder> = new Map();
+  private readonly binders: Map<string, Handler> = new Map();
   private readonly restart = new IntervalManager();
 
   /**
@@ -22,7 +22,7 @@ export class Ledger {
     this.restart.start(() => {
       this.binders.entries().filter(([_, v]) => !v.isAlive && v.wasAlive).forEach(([k, v]) => {
         v.terminate();
-        this.binders.set(crypto.randomUUID(), new Binder(v.options, options));
+        this.binders.set(crypto.randomUUID(), new Handler(v.options, options));
         this.binders.delete(k);
       });
     }, 100);
@@ -37,7 +37,7 @@ export class Ledger {
    * @returns {@link Ledger}
    */
   public register<T extends BinderOption>(options: T): Ledger {
-    this.binders.set(crypto.randomUUID(), new Binder(options, this.options));
+    this.binders.set(crypto.randomUUID(), new Handler(options, this.options));
     return this;
   }
 

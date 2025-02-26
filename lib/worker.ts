@@ -1,10 +1,8 @@
-// Original: Page
-
 import { type AliveMessageContext, type DispatchMessageContext, type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
 import type { WorkerHandler } from './struct/interface/handler.ts';
 import type { ServiceBinderOption } from './struct/interface/options.ts';
 
-/** Worker for Binder. Loads  */
+/** Worker for Handler. */
 new class Worker {
   protected handler: WorkerHandler | null = null;
 

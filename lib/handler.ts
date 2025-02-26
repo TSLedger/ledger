@@ -4,7 +4,7 @@ import { type AliveMessageContext, type ConfigureWorkerMessageContext, type Inde
 import type { BinderOption } from './struct/interface/options.ts';
 import { IntervalManager } from './util/interval.ts';
 
-export class Binder extends Worker {
+export class Handler extends Worker {
   public readonly options: BinderOption;
 
   // Queue

@@ -1,6 +1,7 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@cm-iv/queue@*": "1.0.0",
     "jsr:@cm-iv/queue@1.0.0": "1.0.0",
     "jsr:@jotsr/delayed@2.1.1": "2.1.1",
     "jsr:@ledger/console-handler@*": "0.0.1",

@@ -9,18 +9,18 @@
 
 Welcome to Ledger, a batteries-included TypeScript-first Logging Framework on JSR. Compatible with Deno and Node.js. Themed to a Ledger of Records
 
-Ledger provides the structure to create or utilize a binder to process loggable events. These transports can range from stdout, file-backed, or even pure HTTP Requests for any vendor. Anything that is possible with in TypeScript is possible to do in Ledger.
+Ledger provides the structure to create or utilize a Handler to process loggable events. These transports can range from stdout, file-backed, or even pure HTTP Requests for any vendor. Anything that is possible with in TypeScript is possible to do in Ledger.
 
-## What is a Binder?
+## What is a Handler?
 
-A Ledger Binder (Handler) is simply a managed worker instance that receives a payload from the Ledger API. You can leverage an infinite amount of handlers all working side-by-side. You can utilize pre-built handlers or publish one you create.
+A Ledger Handler is simply a managed worker instance that receives a payload from the Ledger API. You can leverage an infinite amount of Handlers all working side-by-side. You can utilize pre-built Handlers or publish one you create.
 
-We recommend publishing binders to JSR.
+We recommend publishing Handlers to JSR.
 
 Features:
 
-- Binders using a Worker reduces the burden of Event Loop and enables async functionality.
-- Binders will automatically restore in the event of a critical failure.
+- Handlers using a Worker reduces the burden of Event Loop and enables async functionality.
+- Handlers will automatically restore in the event of a critical failure.
 
 ## Getting Started
 
@@ -32,7 +32,7 @@ import { Ledger } from 'jsr:@ledger/ledger';
 // Initialize Ledger
 const ledger = new Ledger({
   useAsyncDispatchQueue: true, //  or false for ImmediateDispatch mode.
-})
+});
 // Register a Handler. You can chain these too!
 ledger.register({
   definition: 'jsr:@ledger/console-handler@0.0.0', // Version is Important. Please verify the latest version. See: https://jsr.io/@ledger for official handlers.
