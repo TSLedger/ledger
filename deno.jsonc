@@ -3,7 +3,7 @@
   "version": "0.1.7",
   "exports": {
     ".": "./mod.ts",
-    "./binder": "./lib/binder.ts",
+    "./handler": "./lib/handler.ts",
     "./struct": "./lib/struct/export.ts"
   },
   // Compiler Options
