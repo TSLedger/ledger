@@ -1,6 +1,6 @@
 import { type AliveMessageContext, type DispatchMessageContext, type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
 import type { WorkerHandler } from './struct/interface/handler.ts';
-import type { ServiceBinderOption } from './struct/interface/options.ts';
+import type { ServiceHandlerOption } from './struct/interface/options.ts';
 
 /** Worker for Handler. */
 new class Worker {
@@ -14,7 +14,7 @@ new class Worker {
         // Handle Events
         switch (evt.data.operation) {
           case Operation.CONFIGURE_WORKER: {
-            this.handler = new (await import(evt.data.context.definition) as { Handler: new (option: ServiceBinderOption) => WorkerHandler }).Handler(evt.data.context);
+            this.handler = new (await import(evt.data.context.definition) as { Handler: new (option: ServiceHandlerOption) => WorkerHandler }).Handler(evt.data.context);
             self.postMessage({
               operation: Operation.CONFIGURE_WORKER,
             });

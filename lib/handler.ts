@@ -1,11 +1,11 @@
 import { Queue } from '../deps.ts';
 import type { LedgerOption } from './struct/export.ts';
 import { type AliveMessageContext, type ConfigureWorkerMessageContext, type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
-import type { BinderOption } from './struct/interface/options.ts';
+import type { HandlerOption } from './struct/interface/options.ts';
 import { IntervalManager } from './util/interval.ts';
 
 export class Handler extends Worker {
-  public readonly options: BinderOption;
+  public readonly options: HandlerOption;
 
   // Queue
   public readonly dispatchQueue: Queue<IndexedMessageContexts> = new Queue();
@@ -21,11 +21,11 @@ export class Handler extends Worker {
   private isUp = true;
 
   /**
-   * Initialize a Worker with {@link BinderOption}.
+   * Initialize a Worker with {@link HandlerOption}.
    *
-   * @param options The {@link BinderOption} to initialize.
+   * @param options The {@link HandlerOption} to initialize.
    */
-  public constructor(options: BinderOption, parent: LedgerOption) {
+  public constructor(options: HandlerOption, parent: LedgerOption) {
     super(new URL('./worker.ts', import.meta.url), { type: 'module' });
     this.options = options;
 
@@ -69,7 +69,7 @@ export class Handler extends Worker {
         }
         case Operation.LEDGER_ERROR: {
           // deno-lint-ignore no-console
-          console.error(`[Ledger/NagBinderAuthor] Unhandled Exception in Binder Worker (Worker Handler). This is (likely) not a Ledger issue.\n`, evt.data.context);
+          console.error(`[Ledger/NagHandlerAuthor] Unhandled Exception in Handler Worker (Worker Handler). This is (likely) not a Ledger issue.\n`, evt.data.context);
           break;
         }
       }
@@ -85,7 +85,7 @@ export class Handler extends Worker {
     } as ConfigureWorkerMessageContext);
   }
 
-  /** Terminate the Binder. */
+  /** Terminate the Handler. */
   public override terminate(): void {
     if (this.dispatchInterval.running()) this.dispatchInterval.stop();
     if (this.upInterval.running()) this.upInterval.stop();

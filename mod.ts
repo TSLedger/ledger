@@ -1,7 +1,7 @@
 import { Handler } from './lib/handler.ts';
 import { type DispatchMessageContextPassthrough, Operation } from './lib/struct/interface/context.ts';
 import { Level } from './lib/struct/interface/level.ts';
-import type { BinderOption, LedgerOption } from './lib/struct/interface/options.ts';
+import type { HandlerOption, LedgerOption } from './lib/struct/interface/options.ts';
 import { IntervalManager } from './lib/util/interval.ts';
 
 /**
@@ -9,7 +9,7 @@ import { IntervalManager } from './lib/util/interval.ts';
  */
 export class Ledger {
   private readonly options: LedgerOption;
-  private readonly binders: Map<string, Handler> = new Map();
+  private readonly handlers: Map<string, Handler> = new Map();
   private readonly restart = new IntervalManager();
 
   /**
@@ -20,24 +20,24 @@ export class Ledger {
   public constructor(options: LedgerOption) {
     this.options = options;
     this.restart.start(() => {
-      this.binders.entries().filter(([_, v]) => !v.isAlive && v.wasAlive).forEach(([k, v]) => {
+      this.handlers.entries().filter(([_, v]) => !v.isAlive && v.wasAlive).forEach(([k, v]) => {
         v.terminate();
-        this.binders.set(crypto.randomUUID(), new Handler(v.options, options));
-        this.binders.delete(k);
+        this.handlers.set(crypto.randomUUID(), new Handler(v.options, options));
+        this.handlers.delete(k);
       });
     }, 100);
   }
 
   /**
-   * Register the options and configuration for a Binder.
+   * Register the options and configuration for a Handler.
    *
    * Please specify options.definition as the fully qualified import with versions. We recommend using JSR.io.
    *
-   * @param options The {@link BinderOption} to register.
+   * @param options The {@link HandlerOption} to register.
    * @returns {@link Ledger}
    */
-  public register<T extends BinderOption>(options: T): Ledger {
-    this.binders.set(crypto.randomUUID(), new Handler(options, this.options));
+  public register<T extends HandlerOption>(options: T): Ledger {
+    this.handlers.set(crypto.randomUUID(), new Handler(options, this.options));
     return this;
   }
 
@@ -100,7 +100,7 @@ export class Ledger {
   private dispatch(level: Level, context: DispatchMessageContextPassthrough): void {
     if (this.options.useAsyncDispatchQueue) {
       // Enqueue to dispatchQueue.
-      this.binders.forEach((v) => {
+      this.handlers.forEach((v) => {
         v.dispatchQueue.enqueue({
           operation: Operation.DISPATCH,
           context: {
@@ -112,7 +112,7 @@ export class Ledger {
       });
     } else {
       // Immediately Dispatch.
-      this.binders.forEach((v) => {
+      this.handlers.forEach((v) => {
         try {
           v.postMessage({
             operation: Operation.DISPATCH,
@@ -132,10 +132,10 @@ export class Ledger {
   }
 
   /**
-   * Await for all Binders to be indicated as alive.
+   * Await for all Handlers to be indicated as alive.
    */
   public async alive(): Promise<void> {
-    while (this.binders.values().toArray().filter((v) => !v.isAlive).length > 0) {
+    while (this.handlers.values().toArray().filter((v) => !v.isAlive).length > 0) {
       await new Promise((resolve) => setTimeout(resolve, 5));
     }
   }
@@ -145,8 +145,8 @@ export class Ledger {
    */
   public terminate(): void {
     if (this.restart.running()) this.restart.stop();
-    this.binders.forEach((binder) => {
-      binder.terminate();
+    this.handlers.forEach((handler) => {
+      handler.terminate();
     });
   }
 }

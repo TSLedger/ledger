@@ -7,18 +7,18 @@ export interface LedgerOption {
   useAsyncDispatchQueue?: boolean;
 }
 
-/** Binder Options. */
-export interface BinderOption {
+/** Handler Options. */
+export interface HandlerOption {
   /** The fully qualified definition to import. Please include hashes or versions to ensure proper imports. */
   definition: string;
 }
 
 /**
- * Binder Options for Interfaces with the Service Option.
+ * Handler Options for Interfaces with the Service Option.
  *
  * @internal
  */
-export interface ServiceBinderOption extends BinderOption {
+export interface ServiceHandlerOption extends HandlerOption {
   /** The dispatching Service Identifier. */
   service: string;
 }
