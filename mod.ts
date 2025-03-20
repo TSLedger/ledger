@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-console
 import { Handler } from './lib/handler.ts';
 import { type DispatchMessageContextPassthrough, Operation } from './lib/struct/interface/context.ts';
 import { Level } from './lib/struct/interface/level.ts';
@@ -21,6 +22,7 @@ export class Ledger {
     this.options = options;
     this.restart.start(() => {
       this.handlers.entries().filter(([_, v]) => !v.isAlive && v.wasAlive).forEach(([k, v]) => {
+        if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Restarting Handler: '${v.options.definition}' - '${k}' due to no-alive.`);
         v.terminate();
         this.handlers.set(crypto.randomUUID(), new Handler(v.options, options));
         this.handlers.delete(k);
@@ -37,6 +39,7 @@ export class Ledger {
    * @returns {@link Ledger}
    */
   public register<T extends HandlerOption>(options: T): Ledger {
+    if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Register Handler: '${options.definition}' `);
     this.handlers.set(crypto.randomUUID(), new Handler(options, this.options));
     return this;
   }
@@ -124,7 +127,6 @@ export class Ledger {
           });
         } catch (_: unknown) {
           const error = _ as Error;
-          // deno-lint-ignore no-console
           console.error('ImmediateDispatch: Failed', error.stack);
         }
       });
@@ -136,6 +138,7 @@ export class Ledger {
    */
   public async alive(): Promise<void> {
     while (this.handlers.values().toArray().filter((v) => !v.isAlive).length > 0) {
+      if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Checking Handler Alive. Still waiting on one or more handlers to be alive.`);
       await new Promise((resolve) => setTimeout(resolve, 5));
     }
   }
@@ -144,6 +147,7 @@ export class Ledger {
    * Terminate Ledger and Workers Immediately.
    */
   public terminate(): void {
+    if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Terminating Ledger and Handlers...`);
     if (this.restart.running()) this.restart.stop();
     this.handlers.forEach((handler) => {
       handler.terminate();

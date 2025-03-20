@@ -5,6 +5,10 @@ export interface LedgerOption {
 
   /** Use the DispatchQueue of FIFO. False will post directly to Worker Threads immediately. */
   useAsyncDispatchQueue?: boolean;
+
+  /** Troubleshooting Verbose Mode. */
+  troubleshooting?: boolean;
+  troubleshootingIPC?: boolean;
 }
 
 /** Handler Options. */
@@ -21,4 +25,7 @@ export interface HandlerOption {
 export interface ServiceHandlerOption extends HandlerOption {
   /** The dispatching Service Identifier. */
   service: string;
+
+  /** Handler Options IPC Troubleshooting. */
+  troubleshootingIPC?: boolean;
 }

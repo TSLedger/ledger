@@ -34,6 +34,8 @@ export class Handler extends Worker {
       // Handle Events
       switch (evt.data.operation) {
         case Operation.CONFIGURE_WORKER: {
+          if (parent.troubleshooting) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} Handler/Receive: Operation.CONFIGURE_WORKER`);
+
           // Start Intervals.
           // Send Alive Check.
           this.sendInterval.start(() => {
@@ -62,6 +64,7 @@ export class Handler extends Worker {
           break;
         }
         case Operation.ALIVE: {
+          if (parent.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} Handler/Receive: Operation.ALIVE`);
           this.isAlive = true;
           this.wasAlive = true;
           this.isUp = true;
@@ -81,6 +84,7 @@ export class Handler extends Worker {
       context: {
         service: parent.service,
         ...this.options,
+        troubleshootingIPC: parent.troubleshootingIPC ?? false,
       },
     } as ConfigureWorkerMessageContext);
   }

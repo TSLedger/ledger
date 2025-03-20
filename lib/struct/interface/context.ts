@@ -9,6 +9,7 @@ export interface ConfigureWorkerMessageContext extends MessageContext {
   context: {
     service: string;
     definition: string;
+    troubleshootingIPC?: boolean;
   };
 }
 
