@@ -10,7 +10,7 @@ permissions:
   attestations: write
   checks: write
   contents: write
-  discussions: writte
+  discussions: write
 
 jobs:
   candidate:
