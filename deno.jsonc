@@ -9,6 +9,9 @@
   "imports": {
     "@cm-iv/queue": "jsr:@cm-iv/queue@1.0.0",
   },
+  "tasks": {
+    "setup": "./dev/setup.sh"
+  },
   // Compiler Options
   "compilerOptions": {
     "lib": [
