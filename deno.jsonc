@@ -7,10 +7,11 @@
     "./struct": "./lib/struct/export.ts"
   },
   "imports": {
-    "@cm-iv/queue": "jsr:@cm-iv/queue@1.0.0",
+    "@cm-iv/queue": "jsr:@cm-iv/queue@1.0.0"
   },
   "tasks": {
-    "setup": "./dev/setup.sh"
+    "setup": "./dev/setup.sh",
+    "test": "deno check && deno lint && deno fmt --check --ignore=.github && deno test -A"
   },
   // Compiler Options
   "compilerOptions": {

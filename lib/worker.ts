@@ -19,7 +19,7 @@ new class Worker {
             this.options = evt.data.context;
             if (this.options?.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${evt.data.context.definition} ${evt.data.context.service} Worker/Receive: Operation.CONFIGURE_WORKER - Setup`);
             this.handler = new (await import(evt.data.context.definition) as {
-              Handler: new (option: ServiceHandlerOption) => WorkerHandler
+              Handler: new (option: ServiceHandlerOption) => WorkerHandler;
             }).Handler(evt.data.context);
             if (this.options?.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${evt.data.context.definition} ${evt.data.context.service} Worker/Receive: Operation.CONFIGURE_WORKER - Loaded Handler`);
             self.postMessage({

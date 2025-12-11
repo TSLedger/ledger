@@ -16,4 +16,4 @@ jobs:
       # Languages
       - uses: devcontainers/ci@v0.3
         with:
-          runCmd: deno test -A
+          runCmd: deno task test
