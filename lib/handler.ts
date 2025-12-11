@@ -1,4 +1,5 @@
-import { Queue } from '../deps.ts';
+// deno-lint-ignore-file no-console
+import { Queue } from '@cm-iv/queue';
 import type { LedgerOption } from './struct/export.ts';
 import { type AliveMessageContext, type ConfigureWorkerMessageContext, type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
 import type { HandlerOption } from './struct/interface/options.ts';
@@ -71,7 +72,6 @@ export class Handler extends Worker {
           break;
         }
         case Operation.LEDGER_ERROR: {
-          // deno-lint-ignore no-console
           console.error(`[Ledger/NagHandlerAuthor] Unhandled Exception in Handler Worker (Worker Handler). This is (likely) not a Ledger issue.\n`, evt.data.context);
           break;
         }

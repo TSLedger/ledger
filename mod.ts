@@ -21,7 +21,7 @@ export class Ledger {
   public constructor(options: LedgerOption) {
     this.options = options;
     this.restart.start(() => {
-      this.handlers.entries().filter(([_, v]) => !v.isAlive && v.wasAlive).forEach(([k, v]) => {
+      Array.from(this.handlers.entries()).filter(([_, v]) => !v.isAlive && v.wasAlive).forEach(([k, v]) => {
         if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Restarting Handler: '${v.options.definition}' - '${k}' due to no-alive.`);
         v.terminate();
         this.handlers.set(crypto.randomUUID(), new Handler(v.options, options));
@@ -137,9 +137,11 @@ export class Ledger {
    * Await for all Handlers to be indicated as alive.
    */
   public async alive(): Promise<void> {
-    while (this.handlers.values().toArray().filter((v) => !v.isAlive).length > 0) {
-      if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Checking Handler Alive. Still waiting on one or more handlers to be alive.`);
-      await new Promise((resolve) => setTimeout(resolve, 5));
+    for (let i = 0; i < 3; i++) {
+      while (Array.from(this.handlers.values()).filter((v) => !v.isAlive).length > 0) {
+        if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Checking Handler Alive. Still waiting on one or more handlers to be alive.`);
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
     }
   }
 

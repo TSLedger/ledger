@@ -6,6 +6,9 @@
     "./handler": "./lib/handler.ts",
     "./struct": "./lib/struct/export.ts"
   },
+  "imports": {
+    "@cm-iv/queue": "jsr:@cm-iv/queue@1.0.0",
+  },
   // Compiler Options
   "compilerOptions": {
     "lib": [

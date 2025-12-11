@@ -1,6 +1,6 @@
 {
   "name": "Deno",
-  "image": "mcr.microsoft.com/devcontainers/base:bullseye",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
   "features": {
     "ghcr.io/devcontainers-extra/features/deno:1": {
       "version": "latest"
@@ -10,13 +10,11 @@
     }
   },
   "customizations": {
+    "settings": {
+      "remote.containers.copyGitConfig": true
+    },
     "vscode": {
       "settings": {
-        "files.hotExit": "onExitAndWindowClose",
-        "files.insertFinalNewline": true,
-        "files.trimFinalNewlines": true,
-        "editor.formatOnSave": true,
-        "editor.formatOnPaste": true,
         "[typescript]": {
           "editor.defaultFormatter": "denoland.vscode-deno",
           "editor.codeActionsOnSave": {
@@ -34,6 +32,12 @@
         "[jsonc]": {
           "editor.defaultFormatter": "vscode.json-language-features"
         },
+        "editor.formatOnSave": true,
+        "fileNestingUpdater.autoUpdate": true,
+        "fileNestingUpdater.autoUpdateInterval": 720,
+        "fileNestingUpdater.promptOnAutoUpdate": false,
+        "fileNestingUpdater.upstreamRepo": "antfu/vscode-file-nesting-config",
+        "fileNestingUpdater.upstreamBranch": "main",
         "deno.enable": true,
         "extensions.webWorker": true,
         "extensions.ignoreRecommendations": true
@@ -41,14 +45,27 @@
       "extensions": [
         // Editor
         "editorconfig.editorconfig",
+        // Utilities
+        "aaron-bond.better-comments",
+        "ms-azuretools.vscode-containers",
+        "christian-kohler.path-intellisense",
+        "antfu.file-nesting",
         // Language
-        "justjavac.vscode-deno-extensionpack",
+        "denoland.vscode-deno",
         // IntelliCode
         "VisualStudioExptTeam.vscodeintellicode",
         "VisualStudioExptTeam.vscodeintellicode-completions",
-        "VisualStudioExptTeam.intellicode-api-usage-examples"
+        "VisualStudioExptTeam.intellicode-api-usage-examples",
+        "ms-vsliveshare.vsliveshare"
       ]
     }
   },
-  "remoteUser": "root"
+  "remoteUser": "root",
+  "containerUser": "root",
+  "postCreateCommand": {
+    "safe": "git config --global --add safe.directory ${containerWorkspaceFolder}"
+  },
+  "postStartCommand": {
+    "deps_install": "deno install"
+  }
 }
