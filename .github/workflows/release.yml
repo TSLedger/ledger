@@ -24,7 +24,7 @@ jobs:
           deno-version: v2.x
       - uses: devcontainers/ci@v0.3
         with:
-          runCmd: make validate
+          runCmd: deno task test
       # Publish
       - uses: softprops/action-gh-release@v2
         with:
