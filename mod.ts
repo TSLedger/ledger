@@ -21,8 +21,13 @@ export class Ledger {
   public constructor(options: LedgerOption) {
     this.options = options;
     this.restart.start(() => {
-      Array.from(this.handlers.entries()).filter(([_, v]) => !v.isAlive && v.wasAlive).forEach(([k, v]) => {
-        if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Restarting Handler: '${v.options.definition}' - '${k}' due to no-alive.`, v);
+      Array.from(this.handlers.entries()).filter(([_, v]) => v.notAliveCount >= 5).forEach(([k, v]) => {
+        if (this.options.troubleshooting) {
+          console.debug(`[Ledger/Troubleshoot] Restarting Handler: '${v.options.definition}' - '${k}' due to no-alive.`, {
+            isAlive: v.isAlive,
+            wasAlive: v.wasAlive,
+          });
+        }
         v.terminate();
         this.handlers.set(crypto.randomUUID(), new Handler(v.options, options));
         this.handlers.delete(k);

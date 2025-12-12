@@ -34,7 +34,7 @@ export class Handler extends Worker {
       // Handle Events
       switch (evt.data.operation) {
         case Operation.CONFIGURE_WORKER: {
-          if (parent.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} - Handler/Receive: Operation.CONFIGURE_WORKER`);
+          if (parent.troubleshooting) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} - Handler/Receive: Operation.CONFIGURE_WORKER`);
 
           // Start Intervals.
           // Send Alive Check.
@@ -42,16 +42,13 @@ export class Handler extends Worker {
             if (this.isAlive === false) {
               this.notAliveCount++;
             }
-            if (this.notAliveCount >= 3) {
-              if (parent.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} - Handler got no alive for 3 consecutive checks. Terminating Worker.`);
-              this.terminate();
-            }
             this.postMessage({
               operation: Operation.ALIVE,
             } as AliveMessageContext);
             this.isAlive = false;
             return true;
-          }, 125);
+          }, 200);
+
           // Process the Queue.
           if (parent.useAsyncDispatchQueue ?? true) {
             this.dispatchInterval.start(() => {
@@ -63,6 +60,7 @@ export class Handler extends Worker {
         }
         case Operation.ALIVE: {
           if (parent.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} - Handler/Receive: Operation.ALIVE`);
+          this.notAliveCount = 0;
           this.isAlive = true;
           this.wasAlive = true;
           break;
