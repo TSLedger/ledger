@@ -22,7 +22,7 @@ export class Ledger {
     this.options = options;
     this.restart.start(() => {
       Array.from(this.handlers.entries()).filter(([_, v]) => !v.isAlive && v.wasAlive).forEach(([k, v]) => {
-        if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Restarting Handler: '${v.options.definition}' - '${k}' due to no-alive.`);
+        if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Restarting Handler: '${v.options.definition}' - '${k}' due to no-alive.`, v);
         v.terminate();
         this.handlers.set(crypto.randomUUID(), new Handler(v.options, options));
         this.handlers.delete(k);

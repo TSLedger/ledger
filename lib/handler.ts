@@ -13,13 +13,12 @@ export class Handler extends Worker {
 
   // State Managers
   private readonly sendInterval = new IntervalManager();
-  private readonly upInterval = new IntervalManager();
   private readonly dispatchInterval = new IntervalManager();
 
   // State Variables
   public isAlive = false;
   public wasAlive = false;
-  private isUp = true;
+  public notAliveCount = 0;
 
   /**
    * Initialize a Worker with {@link HandlerOption}.
@@ -35,26 +34,24 @@ export class Handler extends Worker {
       // Handle Events
       switch (evt.data.operation) {
         case Operation.CONFIGURE_WORKER: {
-          if (parent.troubleshooting) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} Handler/Receive: Operation.CONFIGURE_WORKER`);
+          if (parent.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} - Handler/Receive: Operation.CONFIGURE_WORKER`);
 
           // Start Intervals.
           // Send Alive Check.
           this.sendInterval.start(() => {
-            if (this.isUp) return true;
+            if (this.isAlive === false) {
+              this.notAliveCount++;
+            }
+            if (this.notAliveCount >= 3) {
+              if (parent.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} - Handler got no alive for 3 consecutive checks. Terminating Worker.`);
+              this.terminate();
+            }
             this.postMessage({
               operation: Operation.ALIVE,
             } as AliveMessageContext);
+            this.isAlive = false;
             return true;
-          }, 10);
-          // Check for Alive Response.
-          this.upInterval.start(() => {
-            if (!this.isUp) {
-              this.terminate();
-              return false;
-            }
-            this.isUp = false;
-            return true;
-          }, 30);
+          }, 125);
           // Process the Queue.
           if (parent.useAsyncDispatchQueue ?? true) {
             this.dispatchInterval.start(() => {
@@ -65,14 +62,13 @@ export class Handler extends Worker {
           break;
         }
         case Operation.ALIVE: {
-          if (parent.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} Handler/Receive: Operation.ALIVE`);
+          if (parent.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} - Handler/Receive: Operation.ALIVE`);
           this.isAlive = true;
           this.wasAlive = true;
-          this.isUp = true;
           break;
         }
         case Operation.LEDGER_ERROR: {
-          console.error(`[Ledger/NagHandlerAuthor] Unhandled Exception in Handler Worker (Worker Handler). This is (likely) not a Ledger issue.\n`, evt.data.context);
+          console.error(`[Ledger/NagHandlerAuthor] ${this.options.definition} - Unhandled Exception in Handler Worker (Worker Handler). This is (likely) not a Ledger issue.\n`, evt.data.context);
           break;
         }
       }
@@ -87,12 +83,13 @@ export class Handler extends Worker {
         troubleshootingIPC: parent.troubleshootingIPC ?? false,
       },
     } as ConfigureWorkerMessageContext);
+    this.isAlive = true;
+    this.wasAlive = true;
   }
 
   /** Terminate the Handler. */
   public override terminate(): void {
     if (this.dispatchInterval.running()) this.dispatchInterval.stop();
-    if (this.upInterval.running()) this.upInterval.stop();
     if (this.sendInterval.running()) this.sendInterval.stop();
     this.isAlive = false;
     super.terminate();

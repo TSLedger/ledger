@@ -38,5 +38,6 @@ Deno.test('Runtime Definition Test', async (kit) => {
     ledger.warning('Validating API... (Warning)', object);
     ledger.severe('Validating API... (Severe)', object);
     await new Promise((resolve) => setTimeout(resolve, 5000));
+    ledger.terminate();
   });
 });

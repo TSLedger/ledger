@@ -29,10 +29,10 @@ new class Worker {
             break;
           }
           case Operation.ALIVE: {
-            if (this.options?.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} ${this.options.service} Worker/Receive: Operation.ALIVE`);
             self.postMessage({
               operation: Operation.ALIVE,
             } as AliveMessageContext);
+            if (this.options?.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} ${this.options.service} Worker/Receive: Operation.ALIVE`);
             break;
           }
           case Operation.DISPATCH: {
