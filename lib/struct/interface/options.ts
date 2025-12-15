@@ -11,18 +11,15 @@ export interface LedgerOption {
   troubleshootingIPC?: boolean;
 }
 
-/** Handler Options. */
-export interface HandlerOption {
-  /** The fully qualified definition to import. Please include hashes or versions to ensure proper imports. */
-  definition: string;
-}
-
 /**
  * Handler Options for Interfaces with the Service Option.
  *
  * @internal
  */
-export interface ServiceHandlerOption extends HandlerOption {
+export interface ServiceHandlerOption {
+  /** The fully qualified definition to import. Please include hashes or versions to ensure proper imports. */
+  definition: string;
+
   /** The dispatching Service Identifier. */
   service: string;
 

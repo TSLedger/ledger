@@ -11,7 +11,7 @@
   },
   "tasks": {
     "setup": "./dev/setup.sh",
-    "test": "deno check && deno lint && deno fmt --check --ignore=.github && deno test -A"
+    "test": "deno check && deno lint && deno fmt --check --ignore=.github && deno test -A --trace-leaks"
   },
   // Compiler Options
   "compilerOptions": {

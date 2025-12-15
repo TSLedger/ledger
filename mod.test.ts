@@ -2,19 +2,19 @@ import { Ledger } from '@ledger/ledger';
 
 let ledger: Ledger;
 
-Deno.test.beforeAll(async () => {
-  ledger = new Ledger({
-    service: 'Test IPC Service',
-    troubleshooting: true,
-    useAsyncDispatchQueue: true,
-  });
-  ledger.register({
-    definition: 'jsr:@ledger/console-handler@0.0.4',
-  });
-  await ledger.alive();
-});
-
 Deno.test('Runtime Definition Test', async (kit) => {
+  await kit.step('setup', async () => {
+    ledger = new Ledger({
+      service: 'Test IPC Service',
+      troubleshooting: true,
+      troubleshootingIPC: true,
+      useAsyncDispatchQueue: true,
+    });
+    ledger.register({
+      definition: new URL('./lib/internal/mock.handler.ts', import.meta.url).href,
+    });
+    await ledger.alive();
+  });
   await kit.step('poll alive', async () => {
     await ledger.alive();
   });

@@ -1,8 +1,9 @@
 // deno-lint-ignore-file no-console
+import { ServiceHandlerOption } from '@ledger/ledger/struct';
 import { Handler } from './lib/handler.ts';
 import { type DispatchMessageContextPassthrough, Operation } from './lib/struct/interface/context.ts';
 import { Level } from './lib/struct/interface/level.ts';
-import type { HandlerOption, LedgerOption } from './lib/struct/interface/options.ts';
+import type { LedgerOption } from './lib/struct/interface/options.ts';
 import { IntervalManager } from './lib/util/interval.ts';
 
 /**
@@ -43,9 +44,17 @@ export class Ledger {
    * @param options The {@link HandlerOption} to register.
    * @returns {@link Ledger}
    */
-  public register<T extends HandlerOption>(options: T): Ledger {
+  public register<T extends Pick<ServiceHandlerOption, 'definition'>>(options: T): Ledger {
     if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Register Handler: '${options.definition}' `);
-    this.handlers.set(crypto.randomUUID(), new Handler(options, this.options));
+    this.handlers.set(
+      crypto.randomUUID(),
+      new Handler({
+        definition: options.definition,
+        service: this.options.service,
+        troubleshooting: this.options.troubleshooting ?? false,
+        troubleshootingIPC: this.options.troubleshootingIPC ?? false,
+      }, this.options),
+    );
     return this;
   }
 
@@ -155,7 +164,7 @@ export class Ledger {
    */
   public terminate(): void {
     if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Terminating Ledger and Handlers...`);
-    if (this.restart.running()) this.restart.stop();
+    this.restart.stop();
     this.handlers.forEach((handler) => {
       handler.terminate();
     });

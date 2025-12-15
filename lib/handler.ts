@@ -2,18 +2,18 @@
 import { Queue } from '@cm-iv/queue';
 import type { LedgerOption } from './struct/export.ts';
 import { type AliveMessageContext, type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
-import type { HandlerOption } from './struct/interface/options.ts';
+import type { ServiceHandlerOption } from './struct/interface/options.ts';
 import { IntervalManager } from './util/interval.ts';
 
 export class Handler extends Worker {
-  public readonly options: HandlerOption;
+  public readonly options: ServiceHandlerOption;
 
   // Queue
   public readonly dispatchQueue: Queue<IndexedMessageContexts> = new Queue();
 
   // State Managers
-  private readonly sendInterval = new IntervalManager();
-  private readonly dispatchInterval = new IntervalManager();
+  private readonly alive = new IntervalManager();
+  private readonly dispatch = new IntervalManager();
 
   // State Variables
   public isAlive = false;
@@ -25,7 +25,7 @@ export class Handler extends Worker {
    *
    * @param options The {@link HandlerOption} to initialize.
    */
-  public constructor(options: HandlerOption, parent: LedgerOption) {
+  public constructor(options: ServiceHandlerOption, parent: LedgerOption) {
     const url = new URL(`./worker.ts`, import.meta.url);
     url.searchParams.set('definition', options.definition);
     url.searchParams.set('service', parent.service);
@@ -39,11 +39,12 @@ export class Handler extends Worker {
       // Handle Events
       switch (evt.data.operation) {
         case Operation.CONFIGURE_WORKER: {
-          if (parent.troubleshooting) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} - Handler/Receive: Operation.CONFIGURE_WORKER`);
+          if (parent.troubleshooting) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} - Handler/Receive: Operation.CONFIGURE_WORKER, Update Alive. Begin Processing to Worker.`);
+          this.isAlive = true;
 
           // Start Intervals.
           // Send Alive Check.
-          this.sendInterval.start(() => {
+          this.alive.start(() => {
             if (this.isAlive === false) {
               this.notAliveCount++;
             }
@@ -56,20 +57,22 @@ export class Handler extends Worker {
 
           // Process the Queue.
           if (parent.useAsyncDispatchQueue ?? true) {
-            this.dispatchInterval.start(() => {
+            this.dispatch.start(() => {
               if (this.dispatchQueue.isEmpty()) return;
               this.postMessage(this.dispatchQueue.dequeue());
             }, 1);
           }
           break;
         }
+
         case Operation.ALIVE: {
-          if (parent.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} - Handler/Receive: Operation.ALIVE`);
+          if (parent.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} - Handler/Receive: Operation.ALIVE; Reset Alive State.`);
           this.notAliveCount = 0;
           this.isAlive = true;
           this.wasAlive = true;
           break;
         }
+
         case Operation.LEDGER_ERROR: {
           console.error(`[Ledger/NagHandlerAuthor] ${this.options.definition} - Unhandled Exception in Handler Worker (Worker Handler). This is (likely) not a Ledger issue.\n`, evt.data.context);
           break;
@@ -84,8 +87,8 @@ export class Handler extends Worker {
 
   /** Terminate the Handler. */
   public override terminate(): void {
-    if (this.dispatchInterval.running()) this.dispatchInterval.stop();
-    if (this.sendInterval.running()) this.sendInterval.stop();
+    this.dispatch.stop();
+    this.alive.stop();
     this.isAlive = false;
     super.terminate();
   }

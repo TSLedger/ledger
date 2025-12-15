@@ -10,6 +10,10 @@ const service = url.searchParams.get('service')!;
 const troubleshooting = url.searchParams.get('troubleshooting') === 'true';
 const troubleshootingIPC = url.searchParams.get('troubleshootingIPC') === 'true';
 
+if (troubleshootingIPC) {
+  console.info(`[Ledger/Troubleshoot] ${definition} ${service} Worker/Start: Initializing Worker. definition=${definition}, service=${service}`);
+}
+
 /** Generate Handler. */
 const handler: WorkerHandler = new (
   await import(definition) as {
