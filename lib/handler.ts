@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-console
 import { Queue } from '@cm-iv/queue';
 import type { LedgerOption } from './struct/export.ts';
-import { type AliveMessageContext, type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
+import { type AliveMessageContext, ConfigureWorkerMessageContext, type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
 import type { ServiceHandlerOption } from './struct/interface/options.ts';
 import { IntervalManager } from './util/interval.ts';
 
@@ -26,12 +26,7 @@ export class Handler extends Worker {
    * @param options The {@link HandlerOption} to initialize.
    */
   public constructor(options: ServiceHandlerOption, parent: LedgerOption) {
-    const url = new URL(`./worker.ts`, import.meta.url);
-    url.searchParams.set('definition', options.definition);
-    url.searchParams.set('service', parent.service);
-    url.searchParams.set('troubleshooting', String(parent.troubleshooting));
-    url.searchParams.set('troubleshootingIPC', String(parent.troubleshootingIPC ?? false));
-    super(url, { type: 'module' });
+    super(new URL(`./worker.ts`, import.meta.url), { type: 'module' });
     this.options = options;
 
     // Create Event Handler
@@ -79,6 +74,17 @@ export class Handler extends Worker {
         }
       }
     });
+
+    // Post Configuration to Worker
+    this.postMessage({
+      operation: Operation.CONFIGURE_WORKER,
+      context: {
+        definition: this.options.definition,
+        service: this.options.service,
+        troubleshooting: this.options.troubleshooting,
+        troubleshootingIPC: this.options.troubleshootingIPC,
+      },
+    } as ConfigureWorkerMessageContext);
 
     // Set State
     this.isAlive = true;
