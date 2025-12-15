@@ -43,15 +43,15 @@ export class Ledger {
    * @param options The {@link HandlerOption} to register.
    * @returns {@link Ledger}
    */
-  public register<T extends Pick<ServiceHandlerOption, 'definition'>>(options: T): Ledger {
+  public register<T>(options: T & Pick<ServiceHandlerOption, 'definition'>): Ledger {
     if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Register Handler: '${options.definition}' `);
     this.handlers.set(
       crypto.randomUUID(),
       new Handler({
-        definition: options.definition,
         service: this.options.service,
         troubleshooting: this.options.troubleshooting ?? false,
         troubleshootingIPC: this.options.troubleshootingIPC ?? false,
+        ...options,
       }, this.options),
     );
     return this;
