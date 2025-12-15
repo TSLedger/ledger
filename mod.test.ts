@@ -7,7 +7,7 @@ Deno.test('Runtime Definition Test', async (kit) => {
     ledger = new Ledger({
       service: 'Test IPC Service',
       troubleshooting: true,
-      troubleshootingIPC: true,
+      troubleshootingIPC: false,
       useAsyncDispatchQueue: true,
     });
     ledger.register({

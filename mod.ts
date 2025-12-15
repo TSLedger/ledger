@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-console
-import { ServiceHandlerOption } from '@ledger/ledger/struct';
+import type { ServiceHandlerOption } from '@ledger/ledger/struct';
 import { Handler } from './lib/handler.ts';
 import { type DispatchMessageContextPassthrough, Operation } from './lib/struct/interface/context.ts';
 import { Level } from './lib/struct/interface/level.ts';
