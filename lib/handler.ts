@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-console
 import { Queue } from '@cm-iv/queue';
 import type { LedgerOption } from './struct/export.ts';
-import { type AliveMessageContext, ConfigureWorkerMessageContext, type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
+import { type AliveMessageContext, type ConfigureWorkerMessageContext, type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
 import type { ServiceHandlerOption } from './struct/interface/options.ts';
 import { IntervalManager } from './util/interval.ts';
 
