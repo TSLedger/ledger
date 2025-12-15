@@ -26,6 +26,7 @@ export interface ServiceHandlerOption extends HandlerOption {
   /** The dispatching Service Identifier. */
   service: string;
 
-  /** Handler Options IPC Troubleshooting. */
+  /** Handler Options & IPC Troubleshooting. */
+  troubleshooting?: boolean;
   troubleshootingIPC?: boolean;
 }

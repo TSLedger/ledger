@@ -3,47 +3,50 @@ import { type AliveMessageContext, type DispatchMessageContext, type IndexedMess
 import type { WorkerHandler } from './struct/interface/handler.ts';
 import type { ServiceHandlerOption } from './struct/interface/options.ts';
 
+/** Prepare State in Constant Space. */
+const url = new URL(self.location.href);
+const definition = url.searchParams.get('definition')!;
+const service = url.searchParams.get('service')!;
+const troubleshooting = url.searchParams.get('troubleshooting') === 'true';
+const troubleshootingIPC = url.searchParams.get('troubleshootingIPC') === 'true';
+
+/** Generate Handler. */
+const handler: WorkerHandler = new (
+  await import(definition) as {
+    Handler: new (option: ServiceHandlerOption) => WorkerHandler;
+  }
+).Handler({
+  definition,
+  service,
+  troubleshooting,
+  troubleshootingIPC,
+});
+
+/** Acknowledge Configuration to Parent. */
+self.postMessage({
+  operation: Operation.CONFIGURE_WORKER,
+});
+
 /** Worker for Handler. */
 new class Worker {
-  protected handler: WorkerHandler | null = null;
-  private options: ServiceHandlerOption | null = null;
-
   /** Initialize Worker */
   public constructor() {
     // Create Event Handler
-    self.addEventListener('message', async (evt: MessageEvent<IndexedMessageContexts>) => {
+    self.addEventListener('message', (evt: MessageEvent<IndexedMessageContexts>) => {
       try {
         // Handle Events
         switch (evt.data.operation) {
-          case Operation.CONFIGURE_WORKER: {
-            this.options = evt.data.context;
-            if (this.options?.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${evt.data.context.definition} ${evt.data.context.service} Worker/Receive: Operation.CONFIGURE_WORKER - Setup`);
-            this.handler = new (await import(evt.data.context.definition) as {
-              Handler: new (option: ServiceHandlerOption) => WorkerHandler;
-            }).Handler(evt.data.context);
-            if (this.options?.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${evt.data.context.definition} ${evt.data.context.service} Worker/Receive: Operation.CONFIGURE_WORKER - Loaded Handler`);
-            self.postMessage({
-              operation: Operation.CONFIGURE_WORKER,
-            });
-            if (this.options?.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${evt.data.context.definition} ${evt.data.context.service} Worker/Receive: Operation.CONFIGURE_WORKER - Respond`);
-            break;
-          }
           case Operation.ALIVE: {
             self.postMessage({
               operation: Operation.ALIVE,
             } as AliveMessageContext);
-            if (this.options?.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} ${this.options.service} Worker/Receive: Operation.ALIVE`);
+            if (troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${definition} ${service} Worker/Receive: Operation.ALIVE`);
             break;
           }
           case Operation.DISPATCH: {
-            this.handler?.receive({
+            handler?.receive({
               operation: Operation.DISPATCH,
-              context: {
-                q: evt.data.context.q,
-                args: evt.data.context.args,
-                date: evt.data.context.date,
-                level: evt.data.context.level,
-              },
+              context: evt.data.context,
             } as DispatchMessageContext);
             break;
           }
