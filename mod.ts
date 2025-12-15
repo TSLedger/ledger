@@ -1,9 +1,8 @@
 // deno-lint-ignore-file no-console
-import type { ServiceHandlerOption } from '@ledger/ledger/struct';
 import { Handler } from './lib/handler.ts';
 import { type DispatchMessageContextPassthrough, Operation } from './lib/struct/interface/context.ts';
 import { Level } from './lib/struct/interface/level.ts';
-import type { LedgerOption } from './lib/struct/interface/options.ts';
+import type { LedgerOption, ServiceHandlerOption } from './lib/struct/interface/options.ts';
 import { IntervalManager } from './lib/util/interval.ts';
 
 /**
