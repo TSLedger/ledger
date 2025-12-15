@@ -37,12 +37,7 @@ new class Worker {
           case Operation.DISPATCH: {
             this.handler?.receive({
               operation: Operation.DISPATCH,
-              context: {
-                q: evt.data.context.q,
-                args: evt.data.context.args,
-                date: evt.data.context.date,
-                level: evt.data.context.level,
-              },
+              context: evt.data.context,
             } as DispatchMessageContext);
             break;
           }

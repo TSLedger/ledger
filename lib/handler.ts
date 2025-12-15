@@ -78,12 +78,7 @@ export class Handler extends Worker {
     // Post Configuration to Worker
     this.postMessage({
       operation: Operation.CONFIGURE_WORKER,
-      context: {
-        definition: this.options.definition,
-        service: this.options.service,
-        troubleshooting: this.options.troubleshooting,
-        troubleshootingIPC: this.options.troubleshootingIPC,
-      },
+      context: this.options,
     } as ConfigureWorkerMessageContext);
 
     // Set State

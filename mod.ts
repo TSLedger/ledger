@@ -48,10 +48,11 @@ export class Ledger {
     this.handlers.set(
       crypto.randomUUID(),
       new Handler({
+        ...options,
+        definition: options.definition,
         service: this.options.service,
         troubleshooting: this.options.troubleshooting ?? false,
         troubleshootingIPC: this.options.troubleshootingIPC ?? false,
-        ...options,
       }, this.options),
     );
     return this;
