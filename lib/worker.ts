@@ -36,7 +36,7 @@ new class Worker {
             return;
           }
           case Operation.DISPATCH: {
-            if (evt.data.context.level >= (this.options?.level ?? Level.TRACE)) return;
+            if (!(evt.data.context.level >= (this.options?.level ?? Level.TRACE))) return;
             this.handler?.receive({
               operation: Operation.DISPATCH,
               context: evt.data.context,
