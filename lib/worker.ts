@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-console
-import { type AliveMessageContext, type DispatchMessageContext, type IndexedMessageContexts, Operation } from './struct/interface/context.ts';
+import { type AliveMessageContext, type DispatchMessageContext, type IndexedMessageContexts, LedgerErrorMessageContext, Operation } from './struct/interface/context.ts';
 import type { WorkerHandler } from './struct/interface/handler.ts';
+import { Level } from './struct/interface/level.ts';
 import type { ServiceHandlerOption } from './struct/interface/options.ts';
 
 /** Worker for Handler. */
@@ -25,25 +26,33 @@ new class Worker {
               operation: Operation.CONFIGURE_WORKER,
             });
             if (this.options?.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${evt.data.context.definition} ${evt.data.context.service} Worker/Receive: Operation.CONFIGURE_WORKER - Respond to Handler with CONFIGURE_WORKER.`);
-            break;
+            return;
           }
           case Operation.ALIVE: {
             self.postMessage({
               operation: Operation.ALIVE,
             } as AliveMessageContext);
             if (this.options?.troubleshootingIPC) console.debug(`[Ledger/Troubleshoot] ${this.options.definition} ${this.options.service} Worker/Receive: Operation.ALIVE`);
-            break;
+            return;
           }
           case Operation.DISPATCH: {
+            if (evt.data.context.level >= (this.options?.level ?? Level.TRACE)) return;
             this.handler?.receive({
               operation: Operation.DISPATCH,
               context: evt.data.context,
             } as DispatchMessageContext);
-            break;
+            return;
           }
         }
-      } catch (_: unknown) {
-        // no-op
+      } catch (e: unknown) {
+        if (!(e instanceof Error)) return;
+        self.postMessage({
+          operation: Operation.LEDGER_ERROR,
+          context: {
+            message: e.message,
+            stack: e.stack,
+          },
+        } as LedgerErrorMessageContext);
       }
     });
   }
