@@ -1,3 +1,5 @@
+import type { Level } from './level.ts';
+
 /** Ledger Options. */
 export interface LedgerOption {
   /** The dispatching Service Identifier. */
@@ -19,6 +21,9 @@ export interface LedgerOption {
 export interface ServiceHandlerOption {
   /** The fully qualified definition to import. Please include hashes or versions to ensure proper imports. */
   definition: string;
+
+  /** The highest level of events to dispatch to the associated handler. All levels >= selected level will be dispatched. */
+  level: Level;
 
   /** The dispatching Service Identifier. */
   service: string;

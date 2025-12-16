@@ -43,7 +43,7 @@ export class Ledger {
    * @param options The {@link HandlerOption} to register.
    * @returns {@link Ledger}
    */
-  public register<T>(options: T & Pick<ServiceHandlerOption, 'definition'>): Ledger {
+  public register<T>(options: T & Pick<ServiceHandlerOption, 'definition' | 'level'>): Ledger {
     if (this.options.troubleshooting) console.debug(`[Ledger/Troubleshoot] Register Handler: '${options.definition}' `);
     this.handlers.set(
       crypto.randomUUID(),

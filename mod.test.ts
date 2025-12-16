@@ -1,4 +1,5 @@
 import { Ledger } from '@ledger/ledger';
+import { Level } from './lib/struct/interface/level.ts';
 
 let ledger: Ledger;
 
@@ -12,6 +13,7 @@ Deno.test('Runtime Definition Test', async (kit) => {
     });
     ledger.register({
       definition: new URL('./lib/internal/mock.handler.ts', import.meta.url).href,
+      level: Level.INFORMATION,
     });
     await ledger.alive();
   });

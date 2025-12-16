@@ -8,6 +8,7 @@ export interface ConfigureWorkerMessageContext extends MessageContext {
   operation: Operation.CONFIGURE_WORKER;
   context: {
     service: string;
+    level: Level;
     definition: string;
     troubleshooting?: boolean;
     troubleshootingIPC?: boolean;
