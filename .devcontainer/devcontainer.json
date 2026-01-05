@@ -4,9 +4,6 @@
   "features": {
     "ghcr.io/devcontainers-extra/features/deno:1": {
       "version": "latest"
-    },
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "latest"
     }
   },
   "customizations": {
