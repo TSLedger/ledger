@@ -40,7 +40,7 @@ export class Ledger {
    *
    * Please specify options.definition as the fully qualified import with versions. We recommend using JSR.io.
    *
-   * @param options The {@link HandlerOption} to register.
+   * @param options The Service Handler Options to register.
    * @returns {@link Ledger}
    */
   public register<T>(options: T & Pick<ServiceHandlerOption, 'definition' | 'level'>): Ledger {
@@ -61,8 +61,8 @@ export class Ledger {
   /**
    * Dispatches a Trace Event Message.
    *
-   * @param message
-   * @param args
+   * @param message A short message detailing the logged event.
+   * @param args The detailed associated metadata, arguments, etc. to be noted.
    */
   public trace(message?: string, ...args: unknown[]): void {
     this.dispatch(Level.TRACE, {
@@ -72,9 +72,10 @@ export class Ledger {
   }
 
   /**
-   * Dispatches a Information Event Message.
-   * @param message
-   * @param args
+   * Dispatches an Information Event Message.
+   *
+   * @param message A short message detailing the logged event.
+   * @param args The detailed associated metadata, arguments, etc. to be noted.
    */
   public information(message?: string, ...args: unknown[]): void {
     this.dispatch(Level.INFORMATION, {
@@ -86,8 +87,8 @@ export class Ledger {
   /**
    * Dispatches a Warning Event Message.
    *
-   * @param message
-   * @param args
+   * @param message A short message detailing the logged event.
+   * @param args The detailed associated metadata, arguments, etc. to be noted.
    */
   public warning(message?: string, ...args: unknown[]): void {
     this.dispatch(Level.WARNING, {
@@ -99,8 +100,8 @@ export class Ledger {
   /**
    * Dispatches a Severe Event Message.
    *
-   * @param message A string or Error to dispatch.
-   * @param args
+   * @param message A short message detailing the logged event.
+   * @param args The detailed associated metadata, arguments, etc. to be noted.
    */
   public severe(message?: string | Error, ...args: unknown[]): void {
     this.dispatch(Level.SEVERE, {
@@ -112,6 +113,7 @@ export class Ledger {
   /**
    * Internal Dispatching Event. Used to wrap common logic for dispatching messages.
    *
+   * @param level The {@link Level} to dispatch.
    * @param context A {@link DispatchMessageContextPassthrough} to dispatch or enqueue immediately.
    */
   private dispatch(level: Level, context: DispatchMessageContextPassthrough): void {

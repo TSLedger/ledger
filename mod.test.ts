@@ -1,4 +1,4 @@
-import { Ledger } from '@ledger/ledger';
+import { Ledger } from './mod.ts';
 import { Level } from './lib/struct/interface/level.ts';
 
 let ledger: Ledger;
