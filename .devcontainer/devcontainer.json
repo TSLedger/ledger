@@ -10,11 +10,6 @@
     "settings": {
       "remote.containers.copyGitConfig": true
     },
-    "jetbrains": {
-      "plugins": [
-        "deno"
-      ]
-    },
     "vscode": {
       "settings": {
         "[typescript]": {
